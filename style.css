@@ -25,3 +25,23 @@ footer{
     width: 100%;
     bottom:0;
 }
+
+#contact{
+    background-color: #f8f8f8;
+    padding: 20px;
+}
+
+#contact ul {
+    list-style-type: none;
+    padding: 0;
+}
+#contact li{
+    margin-bottom: 10px;
+}
+#contact a {
+    text-decoration: none;
+    color: #333;
+}
+#contact a:hover{
+    color: #007bff;
+}
