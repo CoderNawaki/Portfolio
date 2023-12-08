@@ -76,3 +76,33 @@ footer{
     text-decoration: none;
     color: #007bff;
 }
+
+nav{
+    background-color: #333;
+    padding:10px;
+    position:fixed;
+    width:100%;
+    top:0;
+}
+
+nav ul {
+    list-style-type:none;
+    margin:0;
+    padding:0;
+
+}
+
+nav li{
+    display: inline;
+    margin-right: 20px;
+}
+
+nav a{
+    text-decoration: none;
+    color:#fff;
+    font-weight:bold;
+    transition: color 0.3s ease-in-out;
+}
+nav a:hover{
+    color:#007bff;
+}
