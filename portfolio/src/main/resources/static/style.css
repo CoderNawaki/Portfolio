@@ -26,6 +26,42 @@ footer{
     bottom:0;
 }
 
+/*add styling for the contact container*/
+.contact-container{
+    background-color:#f8f8f8;
+    padding:40px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+#contactForm label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:bold;
+}
+
+#contactForm input, #contactForm textarea{
+    width:100%;
+    padding:10px;
+    margin-bottom:20px;
+    border:1px solid #ddd;
+    border-radius:5px;
+}
+
+#contactForm button{
+    background-color:#007bff;
+    color:#fff;
+    padding:10px 20px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    transition:background-color 0.3s ease-in-out;
+}
+
+#contactForm button:hover{
+    background-color:#0056b3;
+}
+
 #contact{
     background-color: #f8f8f8;
     padding: 20px;
