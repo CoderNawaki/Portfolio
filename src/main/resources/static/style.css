@@ -231,3 +231,18 @@ nav a{
 nav a:hover{
     color:#007bff;
 }
+/*Responsive styling for tablets*/
+@media (min-width:768px){
+    .project{
+        flex-direction:row;/* display projects side by side*/
+    }
+}
+
+/* responsive styling for desktops*/
+
+@media (min-width:992px){
+    .project-container{
+        max-width:900px;/* limit container width on larger screens*/
+        margin:0 auto; /* center the container */
+    }
+}
