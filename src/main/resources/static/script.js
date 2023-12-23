@@ -72,4 +72,32 @@ document.addEventListener("DOMContentLoaded",function(){
     return true;
  }
 
-})
+});
+
+//scroll event button to top
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Your existing JavaScript code
+
+    // Scroll-to-top button functionality
+    const scrollToTopButton = document.getElementById("scrollToTopBtn");
+
+    // Show the button when the user scrolls down 20px from the top
+    window.onscroll = function () {
+        scrollFunction();
+    };
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            scrollToTopButton.style.display = "block";
+        } else {
+            scrollToTopButton.style.display = "none";
+        }
+    }
+
+    // Scroll to the top of the page when the button is clicked
+    scrollToTopButton.addEventListener("click", function () {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    });
+});
