@@ -3,7 +3,7 @@
 document.addEventListener("DOMContentLoaded",function(){
     const navLinks = document.querySelector('nav a');
 
-    navLinks.forEach(link=>{
+    navLinks.foreach(link=>{
         link.addEventListener('click',smoothScroll);
     });
 
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded",function(){
 
         window.scrollTo({
             top:targetElement.offsetTop-60,//adjust the offset if you have a fixed header
-            behavior:'smooth';
+            behavior:'smooth'
         });
     }
 });
@@ -83,12 +83,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const scrollToTopButton = document.getElementById("scrollToTopBtn");
 
     // Show the button when the user scrolls down 20px from the top
-    window.onscroll = function () {
+    window.scroll = function () {
         scrollFunction();
     };
 
     function scrollFunction() {
-        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        if (document.body.scrollTop > 10 || document.documentElement.scrollTop > 10) {
             scrollToTopButton.style.display = "block";
         } else {
             scrollToTopButton.style.display = "none";
