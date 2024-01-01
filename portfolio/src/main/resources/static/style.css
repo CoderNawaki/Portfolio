@@ -325,8 +325,8 @@ nav a:hover{
     transition:0.4s;
 }
 
-/*Responsive styling for tablets*/
-@media (min-width:768px){
+/*Responsive styling for small screen*/
+@media (max-width:768px){
     .project{
         flex-direction:row;/* display projects side by side*/
     }
