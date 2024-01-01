@@ -100,4 +100,13 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.scrollTop = 0;
         document.documentElement.scrollTop = 0;
     });
+
+
+    /* Toggle navigation menu */
+    function toggleMenu(){
+        const nav = document.querySelector('nav');
+        nav.classList.toggle('active');
+    }
+
 });
+

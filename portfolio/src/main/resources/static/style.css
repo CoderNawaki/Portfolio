@@ -305,11 +305,61 @@ nav a:hover{
     background-color: #0056b3;
 }
 
+/* css for the hamburger menu icon */
+
+.menu-icon{
+    display:none;
+    flex-direction:column;
+    cursor:pointer;
+    position:fixed;
+    top:20px;
+    left:20px;
+    z-index:1000;
+}
+
+.bar{
+    background-color:#333;
+    height:4px;
+    width:30px;
+    margin:6px 0;
+    transition:0.4s;
+}
 
 /*Responsive styling for tablets*/
 @media (min-width:768px){
     .project{
         flex-direction:row;/* display projects side by side*/
+    }
+
+    .menu-icon{
+        display:flex;
+    }
+
+    /* hide other navigation elements on smaller screens */
+    nav{
+        display:none;
+    }
+
+    /* display navigation links in a column when the menu is open */
+
+    nav.active{
+        display:flex;
+        flex-direction:column;
+        background-color:#333;
+        position:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        justify-content:center;
+        align-items:center;
+        z-index:999;
+    }
+
+    nav.active a {
+        color:#fff;
+        margin:10px;
+        font-size:1.2em;
     }
 }
 
