@@ -112,6 +112,17 @@ main {
     padding: 2rem 0;
 }
 
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .hero {
     display: grid;
     grid-template-columns: minmax(0, 1.3fr) minmax(290px, 0.9fr);
@@ -260,6 +271,38 @@ main {
     color: #fff8ef;
 }
 
+.hero-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+    margin-top: 1.6rem;
+}
+
+.metric-card {
+    padding: 0.95rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.metric-value,
+.metric-label {
+    margin: 0;
+}
+
+.metric-value {
+    color: #fff8ef;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.metric-label {
+    margin-top: 0.35rem;
+    color: rgba(255, 248, 239, 0.74);
+    line-height: 1.55;
+}
+
 .panel-title {
     margin-top: 0;
     margin-bottom: 1rem;
@@ -334,11 +377,33 @@ main {
 }
 
 .skill-grid,
-.project-grid,
 .strength-grid,
 .now-grid {
     display: grid;
     gap: 1.25rem;
+}
+
+.proof-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.proof-card {
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 18px;
+    background: rgba(255, 252, 247, 0.62);
+    box-shadow: 0 14px 34px rgba(58, 46, 33, 0.08);
+    text-align: center;
+}
+
+.proof-label {
+    margin: 0;
+    color: var(--accent-dark);
+    font-size: 0.93rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
 }
 
 .now-grid {
@@ -352,6 +417,26 @@ main {
 .skill-card,
 .strength-card {
     padding: 1.5rem;
+}
+
+.chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1rem;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.9rem;
+    padding: 0.2rem 0.65rem;
+    border: 1px solid rgba(30, 36, 48, 0.08);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.74);
+    color: var(--accent-dark);
+    font-size: 0.82rem;
+    font-weight: 700;
 }
 
 .now-card {
@@ -378,21 +463,55 @@ main {
     font-size: 1.2rem;
 }
 
-.project-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+.project-showcase {
+    display: grid;
+    gap: 1.35rem;
 }
 
-.project-card {
+.project-case {
+    display: grid;
+    grid-template-columns: minmax(250px, 0.78fr) minmax(0, 1.22fr);
+    gap: 1.2rem;
+    align-items: stretch;
+}
+
+.project-overview,
+.project-body {
+    border: 1px solid rgba(255, 255, 255, 0.52);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+}
+
+.project-overview {
     display: flex;
     flex-direction: column;
-    gap: 0.9rem;
     padding: 1.6rem;
+    background: linear-gradient(160deg, rgba(33, 41, 51, 0.96), rgba(102, 56, 35, 0.92));
+    color: #fff8ef;
+}
+
+.project-body {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    padding: 1.6rem;
+    background: rgba(255, 252, 247, 0.72);
 }
 
 .project-topline {
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
+}
+
+.project-index {
+    margin: 1.2rem 0 0.8rem;
+    color: rgba(240, 207, 171, 0.8);
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
 }
 
 .project-visibility,
@@ -416,10 +535,40 @@ main {
     color: var(--muted);
 }
 
+.project-overview .project-stack {
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 248, 239, 0.82);
+}
+
 .project-tagline {
     color: var(--ink);
     font-size: 1.02rem;
     font-weight: 600;
+}
+
+.project-overview .project-tagline {
+    color: rgba(255, 248, 239, 0.88);
+}
+
+.project-highlight {
+    margin-top: 0.2rem;
+    color: #f8d5b3;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.project-column {
+    padding: 0.25rem 0 0.25rem 1rem;
+    border-left: 3px solid rgba(184, 80, 46, 0.12);
+}
+
+.project-label {
+    margin: 0 0 0.45rem;
+    color: var(--accent-dark);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
 }
 
 .project-details p {
@@ -427,16 +576,25 @@ main {
 }
 
 .project-note {
+    grid-column: 1 / -1;
     padding: 0.85rem 1rem;
     border-radius: 16px;
     background: rgba(30, 36, 48, 0.05);
     font-size: 0.94rem;
 }
 
+.project-note p:last-child {
+    margin: 0;
+}
+
 .project-link {
     margin-top: auto;
     color: var(--accent-dark);
     font-weight: 700;
+}
+
+.project-overview .project-link {
+    color: #fff8ef;
 }
 
 .project-link:hover,
@@ -467,6 +625,32 @@ main {
     margin-top: 1.25rem;
     font-weight: 700;
     color: var(--accent-dark);
+}
+
+.contact-highlight {
+    margin-top: 1.3rem;
+    padding: 1rem 1.1rem;
+    border-radius: 18px;
+    background: rgba(30, 36, 48, 0.05);
+}
+
+.contact-cta-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 1rem;
+}
+
+.contact-cta-strip span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(184, 80, 46, 0.1);
+    color: var(--accent-dark);
+    font-size: 0.84rem;
+    font-weight: 700;
 }
 
 .contact-form {
@@ -533,7 +717,6 @@ main {
     .about-grid,
     .contact-layout,
     .skill-grid,
-    .project-grid,
     .strength-grid,
     .now-grid {
         grid-template-columns: 1fr 1fr;
@@ -543,10 +726,16 @@ main {
         min-height: auto;
     }
 
-    .project-grid,
+    .proof-grid,
     .strength-grid,
     .skill-grid {
         grid-template-columns: 1fr 1fr;
+    }
+
+    .project-case,
+    .project-body,
+    .hero-metrics {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -581,10 +770,12 @@ main {
     .hero,
     .about-grid,
     .contact-layout,
-    .project-grid,
     .strength-grid,
     .skill-grid,
-    .now-grid {
+    .now-grid,
+    .proof-grid,
+    .project-body,
+    .project-case {
         grid-template-columns: 1fr;
     }
 
