@@ -12,6 +12,14 @@
 </head>
 
 <body>
+    <nav>
+        <ul>
+            <li><a href="#intro">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
     <header>
         <h1>CoderNawaki</h1>
         <p>Web Developer</p>
@@ -88,16 +96,17 @@
         <!--include contact form or details here-->
         <form id="contactForm">
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name">
+            <input type="text" id="name" name="name" required>
             <br>
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email">
+            <input type="email" id="email" name="email" required>
             <br>
             <label for="message">Message:</label>
-            <textarea id="message" name="message"></textarea>
+            <textarea id="message" name="message" required></textarea>
             <br>
             <button type="submit">Submit</button>
         </form>
+        <p id="formStatus" aria-live="polite"></p>
         <p>Feel free to reach out to me through the following channels:</p>
 
         <ul>
