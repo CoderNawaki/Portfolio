@@ -8,6 +8,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const scrollToTopButton = document.getElementById("scrollToTopBtn");
     const formStatus = document.getElementById("formStatus");
     const revealElements = document.querySelectorAll(".reveal");
+    const fieldElements = {
+        name: document.getElementById("name"),
+        email: document.getElementById("email"),
+        message: document.getElementById("message")
+    };
+    const fieldErrorElements = {
+        name: document.getElementById("nameError"),
+        email: document.getElementById("emailError"),
+        message: document.getElementById("messageError")
+    };
 
     if (menuToggle && siteNav) {
         menuToggle.addEventListener("click", () => {
@@ -74,10 +84,12 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
 
         const formData = {
-            name: document.getElementById("name")?.value.trim() ?? "",
-            email: document.getElementById("email")?.value.trim() ?? "",
-            message: document.getElementById("message")?.value.trim() ?? ""
+            name: fieldElements.name?.value.trim() ?? "",
+            email: fieldElements.email?.value.trim() ?? "",
+            message: fieldElements.message?.value.trim() ?? ""
         };
+
+        clearFieldErrors();
 
         if (!validateName(formData.name) || !validateEmail(formData.email) || !validateMessage(formData.message)) {
             return;
@@ -97,11 +109,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const payload = await response.json();
 
             if (!response.ok) {
+                applyFieldErrors(payload.fieldErrors || {});
                 setFormStatus(payload.message || "Unable to submit the form.", true);
                 return;
             }
 
             form.reset();
+            clearFieldErrors();
             setFormStatus(payload.message || "Form submitted successfully.", false);
         } catch (error) {
             setFormStatus("Unable to submit the form right now. Please try again.", true);
@@ -110,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function validateName(nameValue) {
         if (nameValue === "") {
+            applyFieldErrors({ name: "Please enter your name." });
             setFormStatus("Please enter your name.", true);
             return false;
         }
@@ -118,6 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function validateEmail(emailValue) {
         if (!emailRegex.test(emailValue)) {
+            applyFieldErrors({ email: "Please enter a valid email address." });
             setFormStatus("Please enter a valid email address.", true);
             return false;
         }
@@ -126,10 +142,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function validateMessage(messageValue) {
         if (messageValue === "") {
+            applyFieldErrors({ message: "Please enter a message." });
             setFormStatus("Please enter a message.", true);
             return false;
         }
         return true;
+    }
+
+    function applyFieldErrors(fieldErrors) {
+        Object.entries(fieldErrorElements).forEach(([fieldName, errorElement]) => {
+            const message = fieldErrors[fieldName] || "";
+
+            if (errorElement) {
+                errorElement.textContent = message;
+            }
+
+            fieldElements[fieldName]?.classList.toggle("has-error", message !== "");
+        });
+    }
+
+    function clearFieldErrors() {
+        applyFieldErrors({
+            name: "",
+            email: "",
+            message: ""
+        });
     }
 
     function setFormStatus(message, isError) {
