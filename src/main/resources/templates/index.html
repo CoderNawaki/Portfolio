@@ -27,7 +27,7 @@
 </header>
 
 <main id="top">
-    <section class="hero section">
+    <section class="hero section reveal">
         <div class="hero-copy">
             <p class="eyebrow" th:text="${location}">Working mainly in Japan</p>
             <h1 th:text="${displayName}">Lama Nawaraj</h1>
@@ -45,15 +45,30 @@
         <div class="hero-panel">
             <p class="panel-title">Current focus</p>
             <ul>
-                <li>Java and Spring Boot application development</li>
-                <li>Frontend delivery with HTML, CSS, JavaScript, and React</li>
-                <li>Design documentation, implementation, testing, and deployment</li>
-                <li>Japanese and English communication for bridge engineering work</li>
+                <li th:each="focus : ${focusAreas}" th:text="${focus}">Java and Spring Boot application development</li>
             </ul>
+            <div class="hero-metrics">
+                <article class="metric-card">
+                    <p class="metric-value">Full Stack</p>
+                    <p class="metric-label">Java-first delivery with frontend execution</p>
+                </article>
+                <article class="metric-card">
+                    <p class="metric-value">JP / EN</p>
+                    <p class="metric-label">Communication across Japanese and English contexts</p>
+                </article>
+            </div>
         </div>
     </section>
 
-    <section class="section" id="about">
+    <section class="section proof-section reveal">
+        <div class="proof-grid">
+            <article class="proof-card" th:each="point : ${proofPoints}">
+                <p class="proof-label" th:text="${point}">Working mainly in Japan</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="section reveal" id="about">
         <div class="section-heading">
             <p class="eyebrow">About</p>
             <h2>Backend depth with full stack delivery</h2>
@@ -76,7 +91,7 @@
         </div>
     </section>
 
-    <section class="section now-section">
+    <section class="section now-section reveal">
         <div class="section-heading">
             <p class="eyebrow">Currently Building</p>
             <h2>Work that reflects the next version of my portfolio</h2>
@@ -93,7 +108,7 @@
         </div>
     </section>
 
-    <section class="section" id="skills">
+    <section class="section reveal" id="skills">
         <div class="section-heading">
             <p class="eyebrow">Skills</p>
             <h2>Stack aligned to full stack roles</h2>
@@ -102,47 +117,91 @@
             <article class="skill-card">
                 <h3>Backend</h3>
                 <p>Java, Spring Boot, REST APIs, Gradle, Maven, JPA, application structure, validation, and testing.</p>
+                <div class="chip-row">
+                    <span class="chip">Java</span>
+                    <span class="chip">Spring Boot</span>
+                    <span class="chip">REST APIs</span>
+                    <span class="chip">Gradle</span>
+                </div>
             </article>
             <article class="skill-card">
                 <h3>Frontend</h3>
                 <p>HTML, CSS, JavaScript, React, responsive UI work, and API-driven user interfaces.</p>
+                <div class="chip-row">
+                    <span class="chip">HTML</span>
+                    <span class="chip">CSS</span>
+                    <span class="chip">JavaScript</span>
+                    <span class="chip">React</span>
+                </div>
             </article>
             <article class="skill-card">
                 <h3>Database</h3>
                 <p>H2, SQLite, Oracle, persistence flows, and business-oriented data handling.</p>
+                <div class="chip-row">
+                    <span class="chip">H2</span>
+                    <span class="chip">SQLite</span>
+                    <span class="chip">Oracle</span>
+                    <span class="chip">JPA</span>
+                </div>
             </article>
             <article class="skill-card">
                 <h3>Professional Strengths</h3>
                 <p>Design documentation, testing discipline, deployment awareness, and Japanese business communication.</p>
+                <div class="chip-row">
+                    <span class="chip">Design Docs</span>
+                    <span class="chip">Testing</span>
+                    <span class="chip">Bridge Engineer</span>
+                    <span class="chip">Japanese</span>
+                </div>
             </article>
         </div>
     </section>
 
-    <section class="section" id="projects">
+    <section class="section reveal" id="projects">
         <div class="section-heading">
             <p class="eyebrow">Featured Projects</p>
-            <h2>Selected work that shows both backend and frontend range</h2>
+            <h2>Case studies that show backend depth and frontend execution</h2>
         </div>
-        <div class="project-grid">
-            <article class="project-card" th:each="project : ${projects}">
-                <div class="project-topline">
-                    <span class="project-visibility" th:text="${project.visibility()}">Public</span>
-                    <span class="project-stack" th:text="${project.stack()}">Java, Spring Boot</span>
+        <div class="project-showcase">
+            <article class="project-case" th:each="project, stat : ${projects}">
+                <div class="project-overview">
+                    <div class="project-topline">
+                        <span class="project-visibility" th:text="${project.visibility()}">Public</span>
+                        <span class="project-stack" th:text="${project.stack()}">Java, Spring Boot</span>
+                    </div>
+                    <p class="project-index" th:text="'0' + ${stat.count}">01</p>
+                    <h3 th:text="${project.title()}">Project title</h3>
+                    <p class="project-tagline" th:text="${project.tagline()}">Project tagline</p>
+                    <p class="project-highlight" th:text="${project.highlight()}">Project highlight</p>
+                    <a class="project-link" th:href="${project.githubUrl()}" target="_blank" rel="noreferrer">View Repository</a>
                 </div>
-                <h3 th:text="${project.title()}">Project title</h3>
-                <p class="project-tagline" th:text="${project.tagline()}">Project tagline</p>
-                <p th:text="${project.problem()}">Problem summary</p>
-                <div class="project-details">
-                    <p><strong>Backend:</strong> <span th:text="${project.backendFocus()}">Backend focus</span></p>
-                    <p><strong>Frontend:</strong> <span th:text="${project.frontendFocus()}">Frontend focus</span></p>
+                <div class="project-body">
+                    <div class="project-column">
+                        <p class="project-label">Problem</p>
+                        <p th:text="${project.problem()}">Problem summary</p>
+                    </div>
+                    <div class="project-column">
+                        <p class="project-label">Backend contribution</p>
+                        <p th:text="${project.backendFocus()}">Backend focus</p>
+                    </div>
+                    <div class="project-column">
+                        <p class="project-label">Frontend contribution</p>
+                        <p th:text="${project.frontendFocus()}">Frontend focus</p>
+                    </div>
+                    <div class="project-column">
+                        <p class="project-label">Why it matters</p>
+                        <p th:text="${project.outcome()}">Outcome summary</p>
+                    </div>
+                    <div class="project-note">
+                        <p class="project-label">Access note</p>
+                        <p th:text="${project.accessNote()}">Repository note</p>
+                    </div>
                 </div>
-                <p class="project-note" th:text="${project.accessNote()}">Repository note</p>
-                <a class="project-link" th:href="${project.githubUrl()}" target="_blank" rel="noreferrer">View Repository</a>
             </article>
         </div>
     </section>
 
-    <section class="section strengths-section">
+    <section class="section strengths-section reveal">
         <div class="section-heading">
             <p class="eyebrow">Strengths</p>
             <h2>How I approach delivery</h2>
@@ -163,7 +222,7 @@
         </div>
     </section>
 
-    <section class="section contact-section" id="contact">
+    <section class="section contact-section reveal" id="contact">
         <div class="section-heading">
             <p class="eyebrow">Contact</p>
             <h2>Let’s talk about full stack roles and practical product work</h2>
@@ -174,6 +233,16 @@
                     If you are hiring for a full stack role focused on Java, Spring Boot, and reliable delivery,
                     feel free to reach out.
                 </p>
+                <div class="contact-highlight">
+                    <p class="project-label">Best fit</p>
+                    <p>Full stack roles where backend quality, structured delivery, and communication matter as much as shipping features.</p>
+                </div>
+                <div class="contact-cta-strip">
+                    <span>Java</span>
+                    <span>Spring Boot</span>
+                    <span>Frontend Delivery</span>
+                    <span>Testing</span>
+                </div>
                 <div class="contact-links">
                     <a th:href="${githubUrl}" target="_blank" rel="noreferrer">GitHub</a>
                     <a th:href="'mailto:' + ${email}">Email</a>

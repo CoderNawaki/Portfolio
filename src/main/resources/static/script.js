@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("contactForm");
     const scrollToTopButton = document.getElementById("scrollToTopBtn");
     const formStatus = document.getElementById("formStatus");
+    const revealElements = document.querySelectorAll(".reveal");
 
     if (menuToggle && siteNav) {
         menuToggle.addEventListener("click", () => {
@@ -48,6 +49,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (form) {
         form.addEventListener("submit", validateAndSubmitForm);
+    }
+
+    if ("IntersectionObserver" in window && revealElements.length > 0) {
+        revealElements.forEach((element, index) => {
+            element.style.transitionDelay = `${Math.min(index * 70, 280)}ms`;
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("is-visible");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.16 });
+
+        revealElements.forEach((element) => observer.observe(element));
+    } else {
+        revealElements.forEach((element) => element.classList.add("is-visible"));
     }
 
     async function validateAndSubmitForm(event) {
