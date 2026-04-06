@@ -7,6 +7,8 @@ public record FeaturedProject(
         String problem,
         String backendFocus,
         String frontendFocus,
+        String outcome,
+        String highlight,
         String githubUrl,
         String visibility,
         String accessNote) {
