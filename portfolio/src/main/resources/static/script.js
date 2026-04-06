@@ -1,52 +1,53 @@
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function toggleMenu() {
-    const nav = document.querySelector("nav");
-    if (nav) {
-        nav.classList.toggle("active");
-    }
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-    const navLinks = document.querySelectorAll("nav a");
+    const menuToggle = document.getElementById("menuToggle");
+    const siteNav = document.getElementById("siteNav");
+    const navLinks = document.querySelectorAll(".site-nav a");
     const form = document.getElementById("contactForm");
     const scrollToTopButton = document.getElementById("scrollToTopBtn");
     const formStatus = document.getElementById("formStatus");
 
-    navLinks.forEach((link) => {
-        link.addEventListener("click", smoothScroll);
-    });
-
-    if (form) {
-        form.addEventListener("submit", validateAndSubmitForm);
+    if (menuToggle && siteNav) {
+        menuToggle.addEventListener("click", () => {
+            const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+            menuToggle.setAttribute("aria-expanded", String(!expanded));
+            siteNav.classList.toggle("is-open", !expanded);
+        });
     }
 
+    navLinks.forEach((link) => {
+        link.addEventListener("click", (event) => {
+            const targetId = link.getAttribute("href")?.replace("#", "");
+            const targetElement = targetId ? document.getElementById(targetId) : null;
+
+            if (!targetElement) {
+                return;
+            }
+
+            event.preventDefault();
+            targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+
+            if (menuToggle && siteNav) {
+                menuToggle.setAttribute("aria-expanded", "false");
+                siteNav.classList.remove("is-open");
+            }
+        });
+    });
+
     if (scrollToTopButton) {
-        window.addEventListener("scroll", toggleScrollButton);
+        window.addEventListener("scroll", () => {
+            const shouldShow = window.scrollY > 320;
+            scrollToTopButton.style.display = shouldShow ? "inline-flex" : "none";
+        });
+
         scrollToTopButton.addEventListener("click", () => {
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
-        toggleScrollButton();
     }
 
-    function smoothScroll(event) {
-        event.preventDefault();
-        const targetId = this.getAttribute("href")?.substring(1);
-        const targetElement = targetId ? document.getElementById(targetId) : null;
-
-        if (!targetElement) {
-            return;
-        }
-
-        window.scrollTo({
-            top: targetElement.offsetTop - 60,
-            behavior: "smooth"
-        });
-    }
-
-    function toggleScrollButton() {
-        const shouldShow = document.body.scrollTop > 10 || document.documentElement.scrollTop > 10;
-        scrollToTopButton.style.display = shouldShow ? "block" : "none";
+    if (form) {
+        form.addEventListener("submit", validateAndSubmitForm);
     }
 
     async function validateAndSubmitForm(event) {
