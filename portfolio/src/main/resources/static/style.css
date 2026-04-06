@@ -141,9 +141,9 @@ main {
     justify-content: center;
     padding: clamp(2rem, 4vw, 4rem);
     background:
-            linear-gradient(145deg, rgba(255, 250, 243, 0.95), rgba(250, 238, 220, 0.8)),
-            url("image.png") center/cover;
-    background-blend-mode: overlay;
+            radial-gradient(circle at 18% 20%, rgba(184, 80, 46, 0.18), transparent 24%),
+            radial-gradient(circle at 82% 18%, rgba(234, 191, 143, 0.38), transparent 30%),
+            linear-gradient(145deg, rgba(255, 250, 243, 0.96), rgba(248, 235, 217, 0.88));
     overflow: hidden;
     position: relative;
 }
@@ -156,6 +156,16 @@ main {
     height: 16rem;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(184, 80, 46, 0.28), transparent 65%);
+}
+
+.hero-copy::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+            linear-gradient(120deg, rgba(255, 255, 255, 0.3), transparent 45%),
+            linear-gradient(90deg, rgba(255, 248, 236, 0.32) 0%, rgba(255, 248, 236, 0.08) 100%);
+    pointer-events: none;
 }
 
 .eyebrow {
@@ -193,6 +203,11 @@ main {
     flex-wrap: wrap;
     gap: 0.9rem;
     margin-top: 2rem;
+}
+
+.hero-copy > * {
+    position: relative;
+    z-index: 1;
 }
 
 .resume-pill {
@@ -591,4 +606,5 @@ main {
     .hero h1 {
         font-size: clamp(2.5rem, 14vw, 4rem);
     }
+
 }
