@@ -676,6 +676,20 @@ main {
     resize: vertical;
 }
 
+.contact-form input.has-error,
+.contact-form textarea.has-error {
+    border-color: rgba(177, 38, 38, 0.55);
+    box-shadow: 0 0 0 3px rgba(177, 38, 38, 0.08);
+}
+
+.field-error {
+    min-height: 1rem;
+    margin: -0.25rem 0 0;
+    color: #b12626;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
 #formStatus {
     min-height: 1.5rem;
     margin: 0.2rem 0 0;
