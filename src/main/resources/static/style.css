@@ -216,6 +216,12 @@ main {
     margin-top: 2rem;
 }
 
+.availability-note {
+    margin: 1.1rem 0 0;
+    color: var(--accent-dark);
+    font-weight: 600;
+}
+
 .hero-copy > * {
     position: relative;
     z-index: 1;
@@ -653,6 +659,14 @@ main {
     font-weight: 700;
 }
 
+.resume-card {
+    margin-top: 1.2rem;
+    padding: 1rem 1.1rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.68);
+    border: 1px solid rgba(30, 36, 48, 0.08);
+}
+
 .contact-form {
     display: grid;
     gap: 0.8rem;
@@ -723,7 +737,26 @@ main {
     width: min(calc(100% - 2rem), var(--content-width));
     margin: 0 auto 2rem;
     color: var(--muted);
-    text-align: center;
+}
+
+.footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(30, 36, 48, 0.1);
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-weight: 700;
+}
+
+.footer-links a:hover {
+    color: var(--accent-dark);
 }
 
 @media (max-width: 1080px) {
@@ -810,6 +843,11 @@ main {
 
     .hero h1 {
         font-size: clamp(2.5rem, 14vw, 4rem);
+    }
+
+    .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
 }

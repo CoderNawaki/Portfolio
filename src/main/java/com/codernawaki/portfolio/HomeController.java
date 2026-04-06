@@ -17,6 +17,7 @@ public class HomeController {
         model.addAttribute("githubUrl", "https://github.com/CoderNawaki");
         model.addAttribute("email", "lama.nawraj00@gmail.com");
         model.addAttribute("resumeLabel", "Resume available on request");
+        model.addAttribute("availability", "Open to full stack opportunities focused on Java, Spring Boot, and product delivery.");
         model.addAttribute("focusAreas", List.of(
                 "Java and Spring Boot backend delivery",
                 "Frontend implementation with HTML, CSS, JavaScript, and React",
