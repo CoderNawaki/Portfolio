@@ -1,0 +1,5 @@
+[build]
+  publish = "portfolio/src/main/resources/static"
+
+[build.environment]
+  NODE_VERSION = "24"
