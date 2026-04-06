@@ -1,112 +1,123 @@
-//add interactive features smooth scrolling ,form validation etc.
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-document.addEventListener("DOMContentLoaded",function(){
-    const navLinks = document.querySelector('nav a');
+function toggleMenu() {
+    const nav = document.querySelector("nav");
+    if (nav) {
+        nav.classList.toggle("active");
+    }
+}
 
-    navLinks.foreach(link=>{
-        link.addEventListener('click',smoothScroll);
+document.addEventListener("DOMContentLoaded", () => {
+    const navLinks = document.querySelectorAll("nav a");
+    const form = document.getElementById("contactForm");
+    const scrollToTopButton = document.getElementById("scrollToTopBtn");
+    const formStatus = document.getElementById("formStatus");
+
+    navLinks.forEach((link) => {
+        link.addEventListener("click", smoothScroll);
     });
 
-    function smoothScroll(e){
-        e.preventDefault();
+    if (form) {
+        form.addEventListener("submit", validateAndSubmitForm);
+    }
 
-        const targetId = this.getAttribute('href').substring(1);
+    if (scrollToTopButton) {
+        window.addEventListener("scroll", toggleScrollButton);
+        scrollToTopButton.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+        toggleScrollButton();
+    }
 
-        const targetElement = document.getElementById(targetId);
+    function smoothScroll(event) {
+        event.preventDefault();
+        const targetId = this.getAttribute("href")?.substring(1);
+        const targetElement = targetId ? document.getElementById(targetId) : null;
+
+        if (!targetElement) {
+            return;
+        }
 
         window.scrollTo({
-            top:targetElement.offsetTop-60,//adjust the offset if you have a fixed header
-            behavior:'smooth'
+            top: targetElement.offsetTop - 60,
+            behavior: "smooth"
         });
     }
-});
 
-
-//form validation
-document.addEventListener("DOMContentLoaded",function(){
- const form = document.getElementById('contactForm');
- form.addEventListener('submit',validateForm);
-
- function validateForm(e){
- e.preventDefault();
-
- const nameInput = document.getElementById('name');
- const emailInput= document.getElementById('email');
- const messageInput = document.getElementById('message');
-
- if(validateName(nameInput) && validateEmail(emailInput) && validateMessage(messageInput)){
-    //submit the form (you can add a ajax request here or let the form submit naturally.
-    alert('Form submitted successfully.');
-
-     }
-  }
-
-
- function validateName(nameInput){
- const nameValue = nameInput.value.trim();
-     if(nameValue ===''){
-        alert('Please enter your name.');
-        return false;
-     }
-     return true;
- }
-
- function validateEmail(emailInput){
-    const emailValue = emailInput.value.trim();
-
-    const emailRegex = /^[^¥s@]+@[¥s@]+¥.[^¥s@]+$/;
-
-    if(!emailRegex.test(emailValue)){
-        alert('Please enter a  valid email address.');
-        return false;
+    function toggleScrollButton() {
+        const shouldShow = document.body.scrollTop > 10 || document.documentElement.scrollTop > 10;
+        scrollToTopButton.style.display = shouldShow ? "block" : "none";
     }
-    return true;
- }
 
- function validateMessage(messageInput){
- const messageValue = messageInput.value.trim();
-    if(messageValue===''){
-    alert('Please enter a message.');
-        return false;
-    }
-    return true;
- }
+    async function validateAndSubmitForm(event) {
+        event.preventDefault();
 
-});
+        const formData = {
+            name: document.getElementById("name")?.value.trim() ?? "",
+            email: document.getElementById("email")?.value.trim() ?? "",
+            message: document.getElementById("message")?.value.trim() ?? ""
+        };
 
-//scroll event button to top
+        if (!validateName(formData.name) || !validateEmail(formData.email) || !validateMessage(formData.message)) {
+            return;
+        }
 
-document.addEventListener("DOMContentLoaded", function () {
-    // Your existing JavaScript code
+        setFormStatus("Submitting...", false);
 
-    // Scroll-to-top button functionality
-    const scrollToTopButton = document.getElementById("scrollToTopBtn");
+        try {
+            const response = await fetch("/submitContactForm", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            });
 
-    // Show the button when the user scrolls down 20px from the top
-    window.scroll = function () {
-        scrollFunction();
-    };
+            const payload = await response.json();
 
-    function scrollFunction() {
-        if (document.body.scrollTop > 10 || document.documentElement.scrollTop > 10) {
-            scrollToTopButton.style.display = "block";
-        } else {
-            scrollToTopButton.style.display = "none";
+            if (!response.ok) {
+                setFormStatus(payload.message || "Unable to submit the form.", true);
+                return;
+            }
+
+            form.reset();
+            setFormStatus(payload.message || "Form submitted successfully.", false);
+        } catch (error) {
+            setFormStatus("Unable to submit the form right now. Please try again.", true);
         }
     }
 
-    // Scroll to the top of the page when the button is clicked
-    scrollToTopButton.addEventListener("click", function () {
-        document.body.scrollTop = 0;
-        document.documentElement.scrollTop = 0;
-    });
-
-
-    /* Toggle navigation menu */
-    function toggleMenu(){
-        const nav = document.querySelector('nav');
-        nav.classList.toggle('active');
+    function validateName(nameValue) {
+        if (nameValue === "") {
+            setFormStatus("Please enter your name.", true);
+            return false;
+        }
+        return true;
     }
 
-});
+    function validateEmail(emailValue) {
+        if (!emailRegex.test(emailValue)) {
+            setFormStatus("Please enter a valid email address.", true);
+            return false;
+        }
+        return true;
+    }
 
+    function validateMessage(messageValue) {
+        if (messageValue === "") {
+            setFormStatus("Please enter a message.", true);
+            return false;
+        }
+        return true;
+    }
+
+    function setFormStatus(message, isError) {
+        if (!formStatus) {
+            return;
+        }
+
+        formStatus.textContent = message;
+        formStatus.classList.toggle("error", isError);
+        formStatus.classList.toggle("success", !isError);
+    }
+});
