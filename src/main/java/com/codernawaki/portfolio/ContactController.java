@@ -1,11 +1,14 @@
-
-
 package com.codernawaki.portfolio;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,26 +16,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 class ContactController {
 
-    private static final String EMAIL_PATTERN = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
+    private final ContactService contactService;
+
+    ContactController(ContactService contactService) {
+        this.contactService = contactService;
+    }
 
     @PostMapping("/submitContactForm")
-    public ResponseEntity<Map<String, String>> submitContactForm(@RequestBody ContactForm contactForm) {
+    public ResponseEntity<ContactResponse> submitContactForm(@Valid @RequestBody ContactForm contactForm) {
+        ContactSubmissionResult result = contactService.submit(contactForm);
+        return ResponseEntity.ok(new ContactResponse(true, result.message(), Map.of()));
+    }
 
-        if (isValid(contactForm)) {
-            return ResponseEntity.ok(Map.of("message", "Form submitted successfully."));
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ContactResponse> handleValidationFailure(MethodArgumentNotValidException exception) {
+        Map<String, String> fieldErrors = new LinkedHashMap<>();
+
+        for (FieldError error : exception.getBindingResult().getFieldErrors()) {
+            fieldErrors.putIfAbsent(error.getField(), error.getDefaultMessage());
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("message", "Invalid form data. Please check your input."));
-    }
-
-    private boolean isValid(ContactForm contactForm) {
-        return contactForm != null
-                && contactForm.getName() != null
-                && !contactForm.getName().trim().isEmpty()
-                && contactForm.getEmail() != null
-                && contactForm.getEmail().matches(EMAIL_PATTERN)
-                && contactForm.getMessage() != null
-                && !contactForm.getMessage().trim().isEmpty();
+                .body(new ContactResponse(false, "Please correct the highlighted fields.", fieldErrors));
     }
 }
