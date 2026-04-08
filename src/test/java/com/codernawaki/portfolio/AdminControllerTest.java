@@ -1,9 +1,14 @@
 package com.codernawaki.portfolio;
 
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -19,7 +24,6 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 
 class AdminControllerTest {
@@ -53,8 +57,23 @@ class AdminControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/contact-submissions"))
                 .andExpect(model().attributeExists("submissions"))
+                .andExpect(model().attributeExists("availableStatuses"))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("lama@example.com")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("I would like to discuss a full stack role.")));
+    }
+
+    @Test
+    void shouldUpdateContactSubmissionAndRedirect() throws Exception {
+        mockMvc.perform(post("/admin/contact-submissions/7")
+                        .param("status", "REVIEWED")
+                        .param("adminNote", "Follow up this week."))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/contact-submissions"))
+                .andExpect(flash().attribute("adminMessage", "Submission updated."));
+
+        verify(contactService).updateSubmission(org.mockito.ArgumentMatchers.eq(7L),
+                argThat(form -> form.getStatus() == ContactSubmissionStatus.REVIEWED
+                        && "Follow up this week.".equals(form.getAdminNote())));
     }
 
     private ViewResolver thymeleafViewResolver() {

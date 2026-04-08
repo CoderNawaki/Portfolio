@@ -29,6 +29,9 @@ public class ContactSubmission {
     @Column(nullable = false, length = 2000)
     private String message;
 
+    @Column(length = 1200)
+    private String adminNote;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -56,6 +59,10 @@ public class ContactSubmission {
         return createdAt;
     }
 
+    public String getAdminNote() {
+        return adminNote;
+    }
+
     public ContactSubmissionStatus getStatus() {
         return status;
     }
@@ -70,6 +77,10 @@ public class ContactSubmission {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public void setAdminNote(String adminNote) {
+        this.adminNote = adminNote;
     }
 
     public void setCreatedAt(Instant createdAt) {
