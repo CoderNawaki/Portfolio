@@ -1,6 +1,7 @@
 package com.codernawaki.portfolio;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -26,5 +27,9 @@ public class ContactService {
         return new ContactSubmissionResult(
                 "Thanks, your message has been received. I will get back to you soon.",
                 contactForm.getName());
+    }
+
+    public List<ContactSubmission> findAllSubmissions() {
+        return contactSubmissionRepository.findAllByOrderByCreatedAtDesc();
     }
 }
