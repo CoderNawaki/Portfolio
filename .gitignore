@@ -38,3 +38,6 @@ out/
 
 ### OS files ###
 .DS_Store
+
+### Local planning ###
+plan.md
