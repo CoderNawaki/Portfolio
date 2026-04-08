@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Submissions | Admin</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body class="admin-body">
+<main class="admin-shell">
+    <section class="admin-header-card">
+        <p class="eyebrow">Admin</p>
+        <h1>Contact submissions</h1>
+        <p class="admin-summary">
+            Review recent recruiter and hiring messages captured through the portfolio contact form.
+        </p>
+    </section>
+
+    <section class="admin-table-card">
+        <div class="admin-table-header">
+            <h2>Inbox</h2>
+            <p th:text="${#lists.size(submissions)} + ' submission(s)'">0 submission(s)</p>
+        </div>
+
+        <div th:if="${#lists.isEmpty(submissions)}" class="admin-empty-state">
+            No contact submissions have been received yet.
+        </div>
+
+        <div th:unless="${#lists.isEmpty(submissions)}" class="admin-table-wrap">
+            <table class="submission-table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Received</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="submission : ${submissions}">
+                    <td th:text="${submission.name}">Lama</td>
+                    <td>
+                        <a th:href="'mailto:' + ${submission.email}" th:text="${submission.email}">lama@example.com</a>
+                    </td>
+                    <td class="message-cell" th:text="${submission.message}">Message body</td>
+                    <td>
+                        <span class="status-pill" th:text="${submission.status}">NEW</span>
+                    </td>
+                    <td th:text="${#temporals.format(submission.createdAt, 'yyyy-MM-dd HH:mm')}">2026-04-08 19:30</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>
