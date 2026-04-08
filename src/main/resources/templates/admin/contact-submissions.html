@@ -22,6 +22,8 @@
             <p th:text="${#lists.size(submissions)} + ' submission(s)'">0 submission(s)</p>
         </div>
 
+        <p th:if="${adminMessage}" class="admin-flash-message" th:text="${adminMessage}">Submission updated.</p>
+
         <div th:if="${#lists.isEmpty(submissions)}" class="admin-empty-state">
             No contact submissions have been received yet.
         </div>
@@ -34,7 +36,9 @@
                     <th>Email</th>
                     <th>Message</th>
                     <th>Status</th>
+                    <th>Admin note</th>
                     <th>Received</th>
+                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -47,7 +51,36 @@
                     <td>
                         <span class="status-pill" th:text="${submission.status}">NEW</span>
                     </td>
+                    <td class="note-cell">
+                        <p th:if="${submission.adminNote}" th:text="${submission.adminNote}">Follow-up note</p>
+                        <span th:unless="${submission.adminNote}" class="empty-value">No note yet</span>
+                    </td>
                     <td th:text="${#temporals.format(submission.createdAt, 'yyyy-MM-dd HH:mm')}">2026-04-08 19:30</td>
+                    <td class="action-cell">
+                        <form class="submission-update-form"
+                              th:action="@{/admin/contact-submissions/{submissionId}(submissionId=${submission.id})}"
+                              method="post">
+                            <label>
+                                <span>Status</span>
+                                <select name="status">
+                                    <option th:each="availableStatus : ${availableStatuses}"
+                                            th:value="${availableStatus}"
+                                            th:text="${availableStatus}"
+                                            th:selected="${availableStatus == submission.status}">
+                                        NEW
+                                    </option>
+                                </select>
+                            </label>
+                            <label>
+                                <span>Note</span>
+                                <textarea name="adminNote"
+                                          rows="4"
+                                          placeholder="Add recruiter follow-up details..."
+                                          th:text="${submission.adminNote}"></textarea>
+                            </label>
+                            <button class="button button-primary admin-save-button" type="submit">Save</button>
+                        </form>
+                    </td>
                 </tr>
                 </tbody>
             </table>
