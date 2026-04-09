@@ -60,6 +60,7 @@
                         <form class="submission-update-form"
                               th:action="@{/admin/contact-submissions/{submissionId}(submissionId=${submission.id})}"
                               method="post">
+                            <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                             <label>
                                 <span>Status</span>
                                 <select name="status">
