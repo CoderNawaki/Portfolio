@@ -5,6 +5,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,6 +41,13 @@ class SecurityConfigTest {
         mockMvc.perform(get("/admin/contact-submissions"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
+    }
+
+    @Test
+    void shouldRenderCustomLoginPage() throws Exception {
+        mockMvc.perform(get("/login"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Sign in to review contact submissions")));
     }
 
     @Test
@@ -87,5 +95,14 @@ class SecurityConfigTest {
                         .param("status", "REVIEWED")
                         .param("adminNote", "Checked."))
                 .andExpect(status().is3xxRedirection());
+    }
+
+    @Test
+    void shouldRedirectToLoginPageAfterLogout() throws Exception {
+        mockMvc.perform(post("/logout")
+                        .with(user("admin").roles("ADMIN"))
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?logout"));
     }
 }

@@ -38,6 +38,11 @@ public class HomeController {
         return "index";
     }
 
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
     private List<FeaturedProject> featuredProjects() {
         return List.of(
                 new FeaturedProject(

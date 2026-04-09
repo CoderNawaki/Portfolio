@@ -3,7 +3,6 @@ package com.codernawaki.portfolio;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,12 +20,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/submitContactForm"))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/style.css", "/script.js", "/image.png", "/robots.txt", "/submitContactForm")
+                        .requestMatchers("/", "/login", "/style.css", "/script.js", "/image.png", "/robots.txt", "/submitContactForm")
                         .permitAll()
                         .requestMatchers("/admin/**").authenticated()
                         .anyRequest().permitAll())
-                .formLogin(Customizer.withDefaults())
-                .logout(logout -> logout.logoutSuccessUrl("/"));
+                .formLogin(login -> login
+                        .loginPage("/login")
+                        .permitAll())
+                .logout(logout -> logout.logoutSuccessUrl("/login?logout"));
 
         return http.build();
     }
