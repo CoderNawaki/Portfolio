@@ -17,7 +17,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "PORTFOLIO_ADMIN_USERNAME=test-admin",
+        "PORTFOLIO_ADMIN_PASSWORD=test-password"
+})
 class SecurityConfigTest {
 
     @Autowired
