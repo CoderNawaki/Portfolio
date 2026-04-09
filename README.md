@@ -38,6 +38,8 @@ This project is used as both a recruiter-facing portfolio site and a demonstrati
 From the repository root:
 
 ```bash
+export PORTFOLIO_ADMIN_USERNAME=your-admin-username
+export PORTFOLIO_ADMIN_PASSWORD=your-admin-password
 ./gradlew bootRun
 ```
 
@@ -45,6 +47,12 @@ The app runs locally at:
 
 ```text
 http://localhost:8081/
+```
+
+Admin login:
+
+```text
+http://localhost:8081/login
 ```
 
 ## Build And Test
@@ -97,3 +105,4 @@ Repository:
 
 - `plan.md` is intentionally kept local and ignored from Git.
 - The application currently uses port `8081` to avoid local conflicts with `8080`.
+- The app now requires `PORTFOLIO_ADMIN_USERNAME` and `PORTFOLIO_ADMIN_PASSWORD` to start.
