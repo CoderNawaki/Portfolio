@@ -6,53 +6,64 @@ This project is used as both a recruiter-facing portfolio site and a demonstrati
 
 ## Highlights
 
-- full stack developer positioning with Java-first backend focus
-- template-driven Spring Boot homepage instead of a static-only site
-- featured project case studies for backend and frontend work
-- validated contact flow with structured API responses
-- responsive UI with section navigation and progressive reveal effects
-- test coverage for the contact controller flow
+- **Full Stack Positioning**: Java-first backend focus with frontend delivery.
+- **Dynamic Configuration**: All portfolio content (bio, projects, contact info) is managed through `application.properties`.
+- **Architectural Excellence**: Layered architecture with dedicated services, properties-backed configuration, and global model advice.
+- **Thymeleaf Fragments**: Reusable template components for a consistent UI across all pages.
+- **Validated Contact Flow**: Structured API responses with server-side validation.
+- **Admin Dashboard**: Protected area to review and manage contact submissions.
+- **Responsive UI**: Modern design with section navigation and progressive reveal effects.
 
 ## Tech Stack
 
-- Java 17 source compatibility
+- Java 17
 - Spring Boot 4
 - Gradle
-- Thymeleaf
+- Thymeleaf (with Spring Security extras)
 - HTML, CSS, JavaScript
-- H2 runtime dependency
+- H2 (Runtime database)
 
 ## Project Structure
 
 - `src/main/java/com/codernawaki/portfolio/`
-  - controllers, contact service, models, and portfolio view data
+  - `PortfolioProperties.java`: Configuration binding for portfolio content.
+  - `PortfolioService.java`: Service to provide project and bio data.
+  - `GlobalModelAttributeAdvice.java`: Provides common model attributes to all templates.
+  - `ContactService.java`: Business logic for contact submissions.
 - `src/main/resources/templates/`
-  - Thymeleaf templates
-- `src/main/resources/static/`
-  - CSS, JavaScript, and static assets
-- `src/test/java/com/codernawaki/portfolio/`
-  - application and controller tests
+  - `index.html`: Main portfolio page.
+  - `fragments.html`: Reusable components (head, header, footer).
+  - `login.html` & `admin/`: Protected admin areas.
 
 ## Run Locally
 
-From the repository root:
+1. **Set Environment Variables**:
+   The application requires admin credentials to start.
+   ```bash
+   export PORTFOLIO_ADMIN_USERNAME=your-admin-username
+   export PORTFOLIO_ADMIN_PASSWORD=your-admin-password
+   ```
 
-```bash
-export PORTFOLIO_ADMIN_USERNAME=your-admin-username
-export PORTFOLIO_ADMIN_PASSWORD=your-admin-password
-./gradlew bootRun
-```
+2. **Run the Application**:
+   ```bash
+   ./gradlew bootRun
+   ```
 
-The app runs locally at:
+3. **Access the Site**:
+   - Portfolio: `http://localhost:8081/`
+   - Admin Login: `http://localhost:8081/login`
 
-```text
-http://localhost:8081/
-```
+## Configuration
 
-Admin login:
+You can update the portfolio content without changing Java code by editing `src/main/resources/application.properties`.
 
-```text
-http://localhost:8081/login
+Example:
+```properties
+portfolio.display-name=Lama Nawaraj
+portfolio.role=Full Stack Developer
+portfolio.bio=Your professional summary here...
+portfolio.projects[0].title=New Project
+...
 ```
 
 ## Build And Test
@@ -61,48 +72,7 @@ http://localhost:8081/login
 ./gradlew build
 ```
 
-## Current Portfolio Focus
-
-This portfolio currently emphasizes:
-
-- Java and Spring Boot backend delivery
-- frontend implementation with HTML, CSS, JavaScript, and React experience
-- design documentation, testing, and release-oriented development
-- Japanese and English communication in engineering environments
-
-## Featured Projects
-
-### WebKintaiSystem
-
-Business-facing attendance platform built with Java Servlet and JSP architecture, focused on workflow reliability, layered design, and operational use cases.
-
-Repository:
-
-- Private repository, available for discussion as a case study
-
-### YouTube Clone
-
-React-based frontend product clone covering search, discovery, API integration, and testing with React Testing Library, MSW, and Playwright.
-
-Repository:
-
-- https://github.com/CoderNawaki/youtube_clone
-
-### Portfolio
-
-This repository, documenting the transition from a simple static page into a more structured full stack portfolio application.
-
-Repository:
-
-- https://github.com/CoderNawaki/Portfolio
-
 ## Contact
 
 - GitHub: https://github.com/CoderNawaki
-- Email: lama.nawraj00+work@gmail.com
-
-## Notes
-
-- `plan.md` is intentionally kept local and ignored from Git.
-- The application currently uses port `8081` to avoid local conflicts with `8080`.
-- The app now requires `PORTFOLIO_ADMIN_USERNAME` and `PORTFOLIO_ADMIN_PASSWORD` to start.
+- Email: lama.nawraj00@gmail.com
