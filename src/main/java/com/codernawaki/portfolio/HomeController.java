@@ -17,11 +17,8 @@ public class HomeController {
     public String home(Model model) {
         PortfolioProperties props = portfolioService.getProperties();
         
-        model.addAttribute("displayName", props.getDisplayName());
         model.addAttribute("role", props.getRole());
         model.addAttribute("location", props.getLocation());
-        model.addAttribute("githubUrl", props.getGithubUrl());
-        model.addAttribute("email", props.getEmail());
         model.addAttribute("resumeLabel", props.getResumeLabel());
         model.addAttribute("availability", props.getAvailability());
         model.addAttribute("focusAreas", props.getFocusAreas());

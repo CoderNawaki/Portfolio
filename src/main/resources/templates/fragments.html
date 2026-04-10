@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:fragment="head">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,21 +28,22 @@
 <body>
 
 <header th:fragment="header" class="site-header">
-    <a class="brand" href="#top" th:text="${displayName}">Lama Nawaraj</a>
+    <a class="brand" th:href="@{/}" th:text="${displayName}">Lama Nawaraj</a>
     <button class="menu-toggle" id="menuToggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
         Menu
     </button>
     <nav class="site-nav" id="siteNav">
-        <a href="#about">About</a>
-        <a href="#skills">Skills</a>
-        <a href="#projects">Projects</a>
-        <a href="#contact">Contact</a>
+        <a th:href="@{/#about}">About</a>
+        <a th:href="@{/#skills}">Skills</a>
+        <a th:href="@{/#projects}">Projects</a>
+        <a th:href="@{/#contact}">Contact</a>
+        <a sec:authorize="isAuthenticated()" th:href="@{/admin/contact-submissions}" class="admin-link">Inbox</a>
     </nav>
 </header>
 
 <footer th:fragment="footer" class="site-footer">
     <div class="footer-inner">
-        <p th:text="'&copy; ' + ${#calendars.format(#calendars.createNow(), 'yyyy')} + ' ' + ${displayName} + '. Full stack developer portfolio.'"></p>
+        <p th:text="'&copy; ' + ${currentYear} + ' ' + ${displayName} + '. Full stack developer portfolio.'"></p>
         <div class="footer-links">
             <a th:href="${githubUrl}" target="_blank" rel="noreferrer">GitHub</a>
             <a th:href="'mailto:' + ${email}">Email</a>
