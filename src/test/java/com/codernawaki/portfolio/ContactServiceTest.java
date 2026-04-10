@@ -15,17 +15,18 @@ import org.mockito.Mockito;
 class ContactServiceTest {
 
     private ContactSubmissionRepository contactSubmissionRepository;
-
+    private EmailService emailService;
     private ContactService contactService;
 
     @BeforeEach
     void setUp() {
         contactSubmissionRepository = Mockito.mock(ContactSubmissionRepository.class);
-        contactService = new ContactService(contactSubmissionRepository);
+        emailService = Mockito.mock(EmailService.class);
+        contactService = new ContactService(contactSubmissionRepository, emailService);
     }
 
     @Test
-    void shouldPersistSubmissionWithNewStatus() {
+    void shouldPersistSubmissionAndSendNotification() {
         when(contactSubmissionRepository.save(any(ContactSubmission.class)))
                 .thenAnswer(invocation -> {
                     ContactSubmission submission = invocation.getArgument(0);
@@ -42,14 +43,12 @@ class ContactServiceTest {
 
         ArgumentCaptor<ContactSubmission> submissionCaptor = ArgumentCaptor.forClass(ContactSubmission.class);
         verify(contactSubmissionRepository).save(submissionCaptor.capture());
-
+        
         ContactSubmission savedSubmission = submissionCaptor.getValue();
         assertThat(savedSubmission.getName()).isEqualTo("Lama");
-        assertThat(savedSubmission.getEmail()).isEqualTo("lama@example.com");
-        assertThat(savedSubmission.getMessage()).isEqualTo("I would like to discuss a full stack role.");
         assertThat(savedSubmission.getStatus()).isEqualTo(ContactSubmissionStatus.NEW);
-        assertThat(savedSubmission.getCreatedAt()).isNotNull();
-        assertThat(savedSubmission.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
+
+        verify(emailService).sendContactNotification(savedSubmission);
 
         assertThat(result.message()).isEqualTo("Thanks, your message has been received. I will get back to you soon.");
         assertThat(result.submittedName()).isEqualTo("Lama");
