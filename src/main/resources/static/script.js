@@ -1,23 +1,16 @@
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 document.addEventListener("DOMContentLoaded", () => {
+    initNavigation();
+    initScrollToTop();
+    initContactForm();
+    initRevealAnimations();
+});
+
+function initNavigation() {
     const menuToggle = document.getElementById("menuToggle");
     const siteNav = document.getElementById("siteNav");
     const navLinks = document.querySelectorAll(".site-nav a");
-    const form = document.getElementById("contactForm");
-    const scrollToTopButton = document.getElementById("scrollToTopBtn");
-    const formStatus = document.getElementById("formStatus");
-    const revealElements = document.querySelectorAll(".reveal");
-    const fieldElements = {
-        name: document.getElementById("name"),
-        email: document.getElementById("email"),
-        message: document.getElementById("message")
-    };
-    const fieldErrorElements = {
-        name: document.getElementById("nameError"),
-        email: document.getElementById("emailError"),
-        message: document.getElementById("messageError")
-    };
 
     if (menuToggle && siteNav) {
         menuToggle.addEventListener("click", () => {
@@ -30,11 +23,10 @@ document.addEventListener("DOMContentLoaded", () => {
     navLinks.forEach((link) => {
         link.addEventListener("click", (event) => {
             const targetId = link.getAttribute("href")?.replace("#", "");
-            const targetElement = targetId ? document.getElementById(targetId) : null;
+            if (targetId && targetId.startsWith("/")) return; // Skip non-anchor links
 
-            if (!targetElement) {
-                return;
-            }
+            const targetElement = targetId ? document.getElementById(targetId) : null;
+            if (!targetElement) return;
 
             event.preventDefault();
             targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -45,137 +37,132 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
+}
 
-    if (scrollToTopButton) {
-        window.addEventListener("scroll", () => {
-            const shouldShow = window.scrollY > 320;
-            scrollToTopButton.style.display = shouldShow ? "inline-flex" : "none";
-        });
+function initScrollToTop() {
+    const scrollToTopButton = document.getElementById("scrollToTopBtn");
+    if (!scrollToTopButton) return;
 
-        scrollToTopButton.addEventListener("click", () => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        });
-    }
+    window.addEventListener("scroll", () => {
+        scrollToTopButton.style.display = window.scrollY > 320 ? "inline-flex" : "none";
+    });
 
-    if (form) {
-        form.addEventListener("submit", validateAndSubmitForm);
-    }
+    scrollToTopButton.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+}
 
-    if ("IntersectionObserver" in window && revealElements.length > 0) {
-        revealElements.forEach((element, index) => {
-            element.style.transitionDelay = `${Math.min(index * 70, 280)}ms`;
-        });
+function initContactForm() {
+    const form = document.getElementById("contactForm");
+    if (!form) return;
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("is-visible");
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.16 });
+    const fields = {
+        name: { element: document.getElementById("name"), error: document.getElementById("nameError") },
+        email: { element: document.getElementById("email"), error: document.getElementById("emailError") },
+        message: { element: document.getElementById("message"), error: document.getElementById("messageError") }
+    };
+    const formStatus = document.getElementById("formStatus");
 
-        revealElements.forEach((element) => observer.observe(element));
-    } else {
-        revealElements.forEach((element) => element.classList.add("is-visible"));
-    }
-
-    async function validateAndSubmitForm(event) {
+    form.addEventListener("submit", async (event) => {
         event.preventDefault();
+        if (!validateForm(fields, formStatus)) return;
 
+        setFormStatus(formStatus, "Submitting...", false);
         const formData = {
-            name: fieldElements.name?.value.trim() ?? "",
-            email: fieldElements.email?.value.trim() ?? "",
-            message: fieldElements.message?.value.trim() ?? ""
+            name: fields.name.element.value.trim(),
+            email: fields.email.element.value.trim(),
+            message: fields.message.element.value.trim()
         };
-
-        clearFieldErrors();
-
-        if (!validateName(formData.name) || !validateEmail(formData.email) || !validateMessage(formData.message)) {
-            return;
-        }
-
-        setFormStatus("Submitting...", false);
 
         try {
             const response = await fetch("/submitContactForm", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)
             });
 
             const payload = await response.json();
-
             if (!response.ok) {
-                applyFieldErrors(payload.fieldErrors || {});
-                setFormStatus(payload.message || "Unable to submit the form.", true);
+                applyFieldErrors(fields, payload.fieldErrors || {});
+                setFormStatus(formStatus, payload.message || "Unable to submit the form.", true);
                 return;
             }
 
             form.reset();
-            clearFieldErrors();
-            setFormStatus(payload.message || "Form submitted successfully.", false);
+            clearFieldErrors(fields);
+            setFormStatus(formStatus, payload.message || "Form submitted successfully.", false);
         } catch (error) {
-            setFormStatus("Unable to submit the form right now. Please try again.", true);
+            setFormStatus(formStatus, "Unable to submit the form right now. Please try again.", true);
         }
+    });
+}
+
+function validateForm(fields, formStatus) {
+    clearFieldErrors(fields);
+    let isValid = true;
+
+    if (!fields.name.element.value.trim()) {
+        showError(fields.name, "Please enter your name.");
+        isValid = false;
+    }
+    if (!emailRegex.test(fields.email.element.value.trim())) {
+        showError(fields.email, "Please enter a valid email address.");
+        isValid = false;
+    }
+    if (!fields.message.element.value.trim()) {
+        showError(fields.message, "Please enter a message.");
+        isValid = false;
     }
 
-    function validateName(nameValue) {
-        if (nameValue === "") {
-            applyFieldErrors({ name: "Please enter your name." });
-            setFormStatus("Please enter your name.", true);
-            return false;
-        }
-        return true;
+    if (!isValid) setFormStatus(formStatus, "Please correct the highlighted fields.", true);
+    return isValid;
+}
+
+function showError(field, message) {
+    if (field.error) field.error.textContent = message;
+    field.element.classList.add("has-error");
+}
+
+function applyFieldErrors(fields, errors) {
+    Object.keys(fields).forEach(key => {
+        if (errors[key]) showError(fields[key], errors[key]);
+    });
+}
+
+function clearFieldErrors(fields) {
+    Object.values(fields).forEach(field => {
+        if (field.error) field.error.textContent = "";
+        field.element.classList.remove("has-error");
+    });
+}
+
+function setFormStatus(element, message, isError) {
+    if (!element) return;
+    element.textContent = message;
+    element.className = isError ? "error" : "success";
+}
+
+function initRevealAnimations() {
+    const revealElements = document.querySelectorAll(".reveal");
+    if (!revealElements.length) return;
+
+    if (!("IntersectionObserver" in window)) {
+        revealElements.forEach(el => el.classList.add("is-visible"));
+        return;
     }
 
-    function validateEmail(emailValue) {
-        if (!emailRegex.test(emailValue)) {
-            applyFieldErrors({ email: "Please enter a valid email address." });
-            setFormStatus("Please enter a valid email address.", true);
-            return false;
-        }
-        return true;
-    }
+    revealElements.forEach((el, i) => {
+        el.style.transitionDelay = `${Math.min(i * 70, 280)}ms`;
+    });
 
-    function validateMessage(messageValue) {
-        if (messageValue === "") {
-            applyFieldErrors({ message: "Please enter a message." });
-            setFormStatus("Please enter a message.", true);
-            return false;
-        }
-        return true;
-    }
-
-    function applyFieldErrors(fieldErrors) {
-        Object.entries(fieldErrorElements).forEach(([fieldName, errorElement]) => {
-            const message = fieldErrors[fieldName] || "";
-
-            if (errorElement) {
-                errorElement.textContent = message;
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                observer.unobserve(entry.target);
             }
-
-            fieldElements[fieldName]?.classList.toggle("has-error", message !== "");
         });
-    }
+    }, { threshold: 0.16 });
 
-    function clearFieldErrors() {
-        applyFieldErrors({
-            name: "",
-            email: "",
-            message: ""
-        });
-    }
-
-    function setFormStatus(message, isError) {
-        if (!formStatus) {
-            return;
-        }
-
-        formStatus.textContent = message;
-        formStatus.classList.toggle("error", isError);
-        formStatus.classList.toggle("success", !isError);
-    }
-});
+    revealElements.forEach(el => observer.observe(el));
+}
