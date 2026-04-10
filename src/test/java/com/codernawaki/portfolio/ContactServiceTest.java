@@ -27,7 +27,11 @@ class ContactServiceTest {
     @Test
     void shouldPersistSubmissionWithNewStatus() {
         when(contactSubmissionRepository.save(any(ContactSubmission.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+                .thenAnswer(invocation -> {
+                    ContactSubmission submission = invocation.getArgument(0);
+                    submission.onCreate(); // Simulate @PrePersist
+                    return submission;
+                });
 
         ContactForm contactForm = new ContactForm();
         contactForm.setName("Lama");

@@ -21,8 +21,6 @@ public class ContactService {
         submission.setName(contactForm.getName());
         submission.setEmail(contactForm.getEmail());
         submission.setMessage(contactForm.getMessage());
-        submission.setCreatedAt(Instant.now());
-        submission.setStatus(ContactSubmissionStatus.NEW);
 
         contactSubmissionRepository.save(submission);
 
