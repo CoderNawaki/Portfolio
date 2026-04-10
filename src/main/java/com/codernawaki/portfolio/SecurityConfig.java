@@ -20,14 +20,17 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/submitContactForm"))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/login", "/style.css", "/script.js", "/image.png", "/robots.txt", "/submitContactForm")
-                        .permitAll()
-                        .requestMatchers("/admin/**").authenticated()
-                        .anyRequest().permitAll())
+                        .requestMatchers("/style.css", "/script.js", "/image.png", "/robots.txt").permitAll()
+                        .requestMatchers("/", "/login", "/submitContactForm").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated())
                 .formLogin(login -> login
                         .loginPage("/login")
+                        .defaultSuccessUrl("/admin/contact-submissions", true)
                         .permitAll())
-                .logout(logout -> logout.logoutSuccessUrl("/login?logout"));
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll());
 
         return http.build();
     }
