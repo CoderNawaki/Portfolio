@@ -22,6 +22,20 @@ services:
     depends_on:
       - portfolio-app
 
+  grafana:
+    image: grafana/grafana-oss
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    networks:
+      - portfolio-network
+    depends_on:
+      - prometheus
+
 networks:
   portfolio-network:
     driver: bridge
+
+volumes:
+  grafana-storage:
