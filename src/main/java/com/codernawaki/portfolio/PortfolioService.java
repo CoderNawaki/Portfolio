@@ -2,6 +2,7 @@ package com.codernawaki.portfolio;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +18,7 @@ public class PortfolioService {
         return properties;
     }
 
+    @Cacheable("projects")
     public List<FeaturedProject> getFeaturedProjects() {
         return properties.getProjects().stream()
                 .map(p -> new FeaturedProject(
