@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 5s # How often to pull metrics
+
+scrape_configs:
+  - job_name: 'portfolio-app'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['portfolio-app:8081'] # Using service name from docker-compose

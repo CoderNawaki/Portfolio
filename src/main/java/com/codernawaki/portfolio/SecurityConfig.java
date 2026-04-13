@@ -21,7 +21,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/submitContactForm"))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/style.css", "/script.js", "/image.png", "/robots.txt").permitAll()
-                        .requestMatchers("/", "/login", "/submitContactForm").permitAll()
+                        .requestMatchers("/", "/login", "/submitContactForm", "/actuator/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(login -> login
