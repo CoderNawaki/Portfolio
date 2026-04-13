@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  portfolio-app:
+    build: .
+    ports:
+      - "8081:8081"
+    environment:
+      - PORTFOLIO_ADMIN_USERNAME=${PORTFOLIO_ADMIN_USERNAME}
+      - PORTFOLIO_ADMIN_PASSWORD=${PORTFOLIO_ADMIN_PASSWORD}
+    networks:
+      - portfolio-network
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - portfolio-network
+    depends_on:
+      - portfolio-app
+
+  grafana:
+    image: grafana/grafana-oss
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    networks:
+      - portfolio-network
+    depends_on:
+      - prometheus
+
+networks:
+  portfolio-network:
+    driver: bridge
+
+volumes:
+  grafana-storage:
