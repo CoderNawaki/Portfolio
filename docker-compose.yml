@@ -8,6 +8,23 @@ services:
     environment:
       - PORTFOLIO_ADMIN_USERNAME=${PORTFOLIO_ADMIN_USERNAME}
       - PORTFOLIO_ADMIN_PASSWORD=${PORTFOLIO_ADMIN_PASSWORD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/portfolio
+      - SPRING_DATASOURCE_USERNAME=portfolio_user
+      - SPRING_DATASOURCE_PASSWORD=portfolio_pass
+    networks:
+      - portfolio-network
+    depends_on:
+      - db
+      - prometheus
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=portfolio
+      - POSTGRES_USER=portfolio_user
+      - POSTGRES_PASSWORD=portfolio_pass
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - portfolio-network
 
@@ -39,3 +56,4 @@ networks:
 
 volumes:
   grafana-storage:
+  postgres-data:
