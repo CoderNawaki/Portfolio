@@ -1,5 +1,7 @@
 package com.codernawaki.portfolio;
 
+import java.io.Serializable;
+
 public record FeaturedProject(
         String title,
         String tagline,
@@ -11,5 +13,6 @@ public record FeaturedProject(
         String highlight,
         String githubUrl,
         String visibility,
-        String accessNote) {
+        String accessNote) implements Serializable {
+    private static final long serialVersionUID = 1L;
 }
