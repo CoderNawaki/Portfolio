@@ -9,11 +9,15 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/portfolio
       - SPRING_DATASOURCE_USERNAME=portfolio_user
       - SPRING_DATASOURCE_PASSWORD=portfolio_pass
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
     networks:
       - portfolio-network
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
     logging:
       driver: "json-file"
       options:
@@ -34,6 +38,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  redis:
+    image: redis:7-alpine
+    networks:
+      - portfolio-network
 
   prometheus:
     image: prom/prometheus
