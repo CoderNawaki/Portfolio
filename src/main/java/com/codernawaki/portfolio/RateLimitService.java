@@ -13,6 +13,7 @@ import io.lettuce.core.codec.ByteArrayCodec;
 import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.codec.StringCodec;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
@@ -25,11 +26,12 @@ import org.springframework.stereotype.Service;
 public class RateLimitService {
 
     private static final Logger logger = LoggerFactory.getLogger(RateLimitService.class);
+    private static final Duration REDIS_RETRY_INTERVAL = Duration.ofSeconds(30);
 
     private final RedisClient redisClient;
     private final Map<String, Bucket> localCache = new ConcurrentHashMap<>();
     private volatile ProxyManager<String> proxyManager;
-    private volatile boolean redisUnavailable;
+    private volatile Instant redisRetryAfter = Instant.EPOCH;
 
     public RateLimitService(@Autowired(required = false) RedisClient redisClient) {
         this.redisClient = redisClient;
@@ -56,7 +58,7 @@ public class RateLimitService {
             return proxyManager;
         }
 
-        if (redisClient == null || redisUnavailable) {
+        if (redisClient == null || Instant.now().isBefore(redisRetryAfter)) {
             return null;
         }
 
@@ -65,7 +67,7 @@ public class RateLimitService {
                 return proxyManager;
             }
 
-            if (redisUnavailable) {
+            if (Instant.now().isBefore(redisRetryAfter)) {
                 return null;
             }
 
@@ -75,9 +77,10 @@ public class RateLimitService {
                 proxyManager = LettuceBasedProxyManager.builderFor(connection)
                         .withExpirationStrategy(ExpirationAfterWriteStrategy.fixedTimeToLive(Duration.ofDays(1)))
                         .build();
+                redisRetryAfter = Instant.EPOCH;
                 return proxyManager;
             } catch (Exception exception) {
-                redisUnavailable = true;
+                redisRetryAfter = Instant.now().plus(REDIS_RETRY_INTERVAL);
                 logger.warn("Redis rate limiting unavailable, falling back to in-memory buckets", exception);
                 return null;
             }
