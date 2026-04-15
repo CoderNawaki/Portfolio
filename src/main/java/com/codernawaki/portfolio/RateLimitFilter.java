@@ -31,7 +31,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 
             if (!probe.isConsumed()) {
-                long waitForRefill = probe.getNanosToWait();
+                long waitForRefill = probe.getNanosToWaitForRefill();
                 response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
                 response.addHeader("X-Rate-Limit-Retry-After-Seconds", String.valueOf(TimeUnit.NANOSECONDS.toSeconds(waitForRefill)));
                 response.getWriter().write("Too many requests. Please try again later.");
