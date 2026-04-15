@@ -10,6 +10,7 @@ import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.codec.StringCodec;
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,12 +18,14 @@ import org.springframework.context.annotation.Configuration;
 public class RateLimitConfig {
 
     @Bean
+    @ConditionalOnProperty(name = "spring.data.redis.host")
     public RedisClient redisClient(@Value("${spring.data.redis.host:localhost}") String host,
                                    @Value("${spring.data.redis.port:6379}") int port) {
         return RedisClient.create(String.format("redis://%s:%d", host, port));
     }
 
     @Bean
+    @ConditionalOnProperty(name = "spring.data.redis.host")
     public ProxyManager<String> proxyManager(RedisClient redisClient) {
         StatefulRedisConnection<String, byte[]> connection = redisClient.connect(RedisCodec.of(StringCodec.UTF8, ByteArrayCodec.INSTANCE));
         return LettuceBasedProxyManager.builderFor(connection)
