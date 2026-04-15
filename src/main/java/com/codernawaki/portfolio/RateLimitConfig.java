@@ -1,7 +1,7 @@
 package com.codernawaki.portfolio;
 
 import io.github.bucket4j.distributed.ExpirationAfterWriteStrategy;
-import io.github.bucket4j.distributed.ProxyManager;
+import io.github.bucket4j.distributed.proxy.ProxyManager;
 import io.github.bucket4j.redis.lettuce.cas.LettuceBasedProxyManager;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
@@ -26,7 +26,7 @@ public class RateLimitConfig {
     public ProxyManager<String> proxyManager(RedisClient redisClient) {
         StatefulRedisConnection<String, byte[]> connection = redisClient.connect(RedisCodec.of(StringCodec.UTF8, ByteArrayCodec.INSTANCE));
         return LettuceBasedProxyManager.builderFor(connection)
-                .withExpirationStrategy(ExpirationAfterWriteStrategy.fixedExpiration(Duration.ofDays(1)))
+                .withExpirationStrategy(ExpirationAfterWriteStrategy.fixedTimeToLive(Duration.ofDays(1)))
                 .build();
     }
 }

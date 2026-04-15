@@ -4,7 +4,7 @@ import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.Refill;
-import io.github.bucket4j.distributed.ProxyManager;
+import io.github.bucket4j.distributed.proxy.ProxyManager;
 import java.time.Duration;
 import java.util.function.Supplier;
 import org.springframework.stereotype.Service;

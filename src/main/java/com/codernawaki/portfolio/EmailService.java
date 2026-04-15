@@ -30,7 +30,8 @@ public class EmailService {
                 "Message:\n%s\n\n" +
                 "View it here: http://localhost:8081/admin/contact-submissions",
                 submission.getName(), submission.getEmail(), submission.getMessage()));
-        
+
         mailSender.send(message);
     }
 }
+
