@@ -25,17 +25,21 @@ public class EmailService {
     @Async
     public void sendContactNotification(ContactSubmission submission) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(notificationEmail);
-            message.setTo(notificationEmail);
-            message.setSubject("New Portfolio Contact Submission from " + submission.getName());
-            message.setText(String.format(
-                    "You have received a new contact submission:\n\n" +
-                    "Name: %s\n" +
-                    "Email: %s\n\n" +
-                    "Message:\n%s\n\n" +
-                    "View it here: http://localhost:8081/admin/contact-submissions",
-                    submission.getName(), submission.getEmail(), submission.getMessage()));
+                        SimpleMailMessage message = new SimpleMailMessage();
+                        message.setFrom(notificationEmail);
+                        message.setTo(notificationEmail);
+                        message.setSubject("New Portfolio Contact Submission from " + submission.getName());
+                        message.setText(String.format("""
+                                You have received a new contact submission:
+            
+                                Name: %s
+                                Email: %s
+            
+                                Message:
+                                %s
+            
+                                View it here: http://localhost:8081/admin/contact-submissions""",
+                                submission.getName(), submission.getEmail(), submission.getMessage()));
 
             mailSender.send(message);
             logger.info("Successfully sent contact notification for submission from: {}", submission.getName());
