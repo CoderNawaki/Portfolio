@@ -13,7 +13,7 @@ This project is used as both a recruiter-facing portfolio site and a demonstrati
 - **Validated Contact Flow**: Structured API responses with server-side validation.
 - **Admin Dashboard**: Protected area to review and manage contact submissions.
 - **Responsive UI**: Modern design with section navigation and progressive reveal effects.
-- **Operational Visibility**: Prometheus metrics, Loki logs, and a provisioned Grafana dashboard for runtime inspection.
+- **Operational Visibility**: Prometheus metrics, Loki logs, Tempo traces, and a provisioned Grafana dashboard for runtime inspection.
 
 ## Tech Stack
 
@@ -23,7 +23,7 @@ This project is used as both a recruiter-facing portfolio site and a demonstrati
 - Thymeleaf (with Spring Security extras)
 - HTML, CSS, JavaScript
 - H2 (Runtime database)
-- Prometheus, Grafana, Loki, Promtail
+- Prometheus, Grafana, Loki, Promtail, Tempo, OpenTelemetry
 
 ## Project Structure
 
@@ -87,12 +87,19 @@ Key URLs:
 - Portfolio app: `http://localhost:8081/`
 - Prometheus: `http://localhost:9090/`
 - Grafana: `http://localhost:3000/`
+- Tempo API: `http://localhost:3200/`
 
 Grafana provisions:
 
 - `Prometheus` as the default metrics datasource
 - `Loki` as the log datasource
+- `Tempo` as the trace datasource
 - `Portfolio Observability` dashboard in the `Portfolio` folder
+
+Tracing:
+
+- The application exports traces via OTLP to Tempo
+- Logs include `traceId` so Grafana can jump from Loki log lines to Tempo traces
 
 ## Contact
 
