@@ -13,6 +13,7 @@ This project is used as both a recruiter-facing portfolio site and a demonstrati
 - **Validated Contact Flow**: Structured API responses with server-side validation.
 - **Admin Dashboard**: Protected area to review and manage contact submissions.
 - **Responsive UI**: Modern design with section navigation and progressive reveal effects.
+- **Operational Visibility**: Prometheus metrics, Loki logs, and a provisioned Grafana dashboard for runtime inspection.
 
 ## Tech Stack
 
@@ -22,6 +23,7 @@ This project is used as both a recruiter-facing portfolio site and a demonstrati
 - Thymeleaf (with Spring Security extras)
 - HTML, CSS, JavaScript
 - H2 (Runtime database)
+- Prometheus, Grafana, Loki, Promtail
 
 ## Project Structure
 
@@ -71,6 +73,26 @@ portfolio.projects[0].title=New Project
 ```bash
 ./gradlew build
 ```
+
+## Monitoring Stack
+
+Run the application and observability stack with Docker Compose:
+
+```bash
+docker compose up -d --build
+```
+
+Key URLs:
+
+- Portfolio app: `http://localhost:8081/`
+- Prometheus: `http://localhost:9090/`
+- Grafana: `http://localhost:3000/`
+
+Grafana provisions:
+
+- `Prometheus` as the default metrics datasource
+- `Loki` as the log datasource
+- `Portfolio Observability` dashboard in the `Portfolio` folder
 
 ## Contact
 

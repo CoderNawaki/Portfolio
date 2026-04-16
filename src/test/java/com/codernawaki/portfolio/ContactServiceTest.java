@@ -16,13 +16,15 @@ class ContactServiceTest {
 
     private ContactSubmissionRepository contactSubmissionRepository;
     private EmailService emailService;
+    private PortfolioMetrics portfolioMetrics;
     private ContactService contactService;
 
     @BeforeEach
     void setUp() {
         contactSubmissionRepository = Mockito.mock(ContactSubmissionRepository.class);
         emailService = Mockito.mock(EmailService.class);
-        contactService = new ContactService(contactSubmissionRepository, emailService);
+        portfolioMetrics = Mockito.mock(PortfolioMetrics.class);
+        contactService = new ContactService(contactSubmissionRepository, emailService, portfolioMetrics);
     }
 
     @Test

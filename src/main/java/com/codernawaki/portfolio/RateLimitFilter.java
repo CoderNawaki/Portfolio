@@ -16,9 +16,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private final RateLimitService rateLimitService;
+    private final PortfolioMetrics portfolioMetrics;
 
-    public RateLimitFilter(RateLimitService rateLimitService) {
+    public RateLimitFilter(RateLimitService rateLimitService, PortfolioMetrics portfolioMetrics) {
         this.rateLimitService = rateLimitService;
+        this.portfolioMetrics = portfolioMetrics;
     }
 
     @Override
@@ -27,16 +29,20 @@ public class RateLimitFilter extends OncePerRequestFilter {
         
         if ("/submitContactForm".equals(request.getRequestURI()) && "POST".equalsIgnoreCase(request.getMethod())) {
             String clientIp = getClientIP(request);
-            Bucket bucket = rateLimitService.resolveBucket(clientIp);
+            RateLimitService.ResolvedBucket resolvedBucket = rateLimitService.resolveBucket(clientIp);
+            Bucket bucket = resolvedBucket.bucket();
             ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 
             if (!probe.isConsumed()) {
                 long waitForRefill = probe.getNanosToWaitForRefill();
+                portfolioMetrics.recordRateLimitRequest("rejected", resolvedBucket.backend());
                 response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
                 response.addHeader("X-Rate-Limit-Retry-After-Seconds", String.valueOf(TimeUnit.NANOSECONDS.toSeconds(waitForRefill)));
                 response.getWriter().write("Too many requests. Please try again later.");
                 return;
             }
+
+            portfolioMetrics.recordRateLimitRequest("allowed", resolvedBucket.backend());
         }
 
         filterChain.doFilter(request, response);
