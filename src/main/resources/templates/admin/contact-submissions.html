@@ -24,8 +24,34 @@
     <section class="admin-table-card">
         <div class="admin-table-header">
             <h2>Inbox</h2>
-            <p th:text="${#lists.size(submissions)} + ' submission(s)'">0 submission(s)</p>
+            <p th:text="${submissionsPage.totalElements} + ' submission(s)'">0 submission(s)</p>
         </div>
+
+        <form class="admin-filter-form" method="get" th:action="@{/admin/contact-submissions}">
+            <label class="admin-filter-field">
+                <span>Search</span>
+                <input type="search"
+                       name="query"
+                       th:value="${currentQuery}"
+                       placeholder="Search name, email, message, or note">
+            </label>
+            <label class="admin-filter-field">
+                <span>Status</span>
+                <select name="status">
+                    <option value="">All statuses</option>
+                    <option th:each="availableStatus : ${availableStatuses}"
+                            th:value="${availableStatus}"
+                            th:text="${availableStatus}"
+                            th:selected="${currentStatus == availableStatus.name()}">
+                        NEW
+                    </option>
+                </select>
+            </label>
+            <div class="admin-filter-actions">
+                <button class="button button-primary" type="submit">Apply</button>
+                <a class="button button-secondary" th:href="@{/admin/contact-submissions}">Reset</a>
+            </div>
+        </form>
 
         <p th:if="${adminMessage}" class="admin-flash-message" th:text="${adminMessage}">Submission updated.</p>
 
@@ -66,6 +92,9 @@
                               th:action="@{/admin/contact-submissions/{submissionId}(submissionId=${submission.id})}"
                               method="post">
                             <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <input type="hidden" name="query" th:value="${currentQuery}">
+                            <input type="hidden" name="filterStatus" th:value="${currentStatus}">
+                            <input type="hidden" name="page" th:value="${submissionsPage.number}">
                             <label>
                                 <span>Status</span>
                                 <select name="status">
@@ -84,13 +113,44 @@
                                           placeholder="Add recruiter follow-up details..."
                                           th:text="${submission.adminNote}"></textarea>
                             </label>
-                            <button class="button button-primary admin-save-button" type="submit">Save</button>
+                            <div class="admin-form-actions">
+                                <button class="button button-primary admin-save-button" type="submit">Save</button>
+                            </div>
+                        </form>
+                        <form class="submission-delete-form"
+                              th:action="@{/admin/contact-submissions/{submissionId}/delete(submissionId=${submission.id})}"
+                              method="post">
+                            <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <input type="hidden" name="query" th:value="${currentQuery}">
+                            <input type="hidden" name="filterStatus" th:value="${currentStatus}">
+                            <input type="hidden" name="page" th:value="${submissionsPage.number}">
+                            <button class="button button-secondary admin-delete-button" type="submit">Delete</button>
                         </form>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
+
+        <nav th:if="${submissionsPage.totalPages > 1}" class="admin-pagination" aria-label="Submission pages">
+            <a class="button button-secondary"
+               th:classappend="${!submissionsPage.hasPrevious()} ? ' is-disabled'"
+               th:href="${submissionsPage.hasPrevious()}
+                    ? @{/admin/contact-submissions(query=${currentQuery}, status=${currentStatus}, page=${submissionsPage.number - 1})}
+                    : '#'}">Previous</a>
+            <div class="admin-page-links">
+                <a th:each="pageNumber : ${#numbers.sequence(0, submissionsPage.totalPages - 1)}"
+                   class="admin-page-link"
+                   th:classappend="${pageNumber == submissionsPage.number} ? ' is-active'"
+                   th:href="@{/admin/contact-submissions(query=${currentQuery}, status=${currentStatus}, page=${pageNumber})}"
+                   th:text="${pageNumber + 1}">1</a>
+            </div>
+            <a class="button button-secondary"
+               th:classappend="${!submissionsPage.hasNext()} ? ' is-disabled'"
+               th:href="${submissionsPage.hasNext()}
+                    ? @{/admin/contact-submissions(query=${currentQuery}, status=${currentStatus}, page=${submissionsPage.number + 1})}
+                    : '#'}">Next</a>
+        </nav>
     </section>
 </main>
 

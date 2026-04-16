@@ -101,6 +101,21 @@ class SecurityConfigTest {
     }
 
     @Test
+    void shouldAllowAdminDeletionWithCsrfToken() throws Exception {
+        ContactSubmission submission = new ContactSubmission();
+        submission.setName("Lama");
+        submission.setEmail("lama@example.com");
+        submission.setMessage("Interested in discussing a role.");
+        submission.setStatus(ContactSubmissionStatus.NEW);
+        ContactSubmission savedSubmission = contactSubmissionRepository.save(submission);
+
+        mockMvc.perform(post("/admin/contact-submissions/" + savedSubmission.getId() + "/delete")
+                        .with(user("admin").roles("ADMIN"))
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection());
+    }
+
+    @Test
     void shouldRedirectToLoginPageAfterLogout() throws Exception {
         mockMvc.perform(post("/logout")
                         .with(user("admin").roles("ADMIN"))
