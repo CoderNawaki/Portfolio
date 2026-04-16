@@ -3,7 +3,8 @@ package com.codernawaki.portfolio;
 
 import io.micrometer.core.instrument.Timer;
 import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -46,8 +47,12 @@ public class ContactService {
         }
     }
 
-    public List<ContactSubmission> findAllSubmissions() {
-        return contactSubmissionRepository.findAllByOrderByCreatedAtDesc();
+    public Page<ContactSubmission> findSubmissions(String query,
+                                                   ContactSubmissionStatus status,
+                                                   Pageable pageable) {
+        String normalized = normalizeQuery(query);
+        String searchPattern = normalized != null ? "%" + normalized.toLowerCase() + "%" : null;
+        return contactSubmissionRepository.search(searchPattern, status, pageable);
     }
 
     public void updateSubmission(long submissionId, UpdateContactSubmissionForm updateForm) {
@@ -58,6 +63,19 @@ public class ContactService {
         submission.setAdminNote(normalizeNote(updateForm.getAdminNote()));
         contactSubmissionRepository.save(submission);
         portfolioMetrics.recordAdminSubmissionUpdate(updateForm.getStatus().name());
+    }
+
+    public void deleteSubmission(long submissionId) {
+        ContactSubmission submission = contactSubmissionRepository.findById(submissionId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Submission not found."));
+        contactSubmissionRepository.delete(submission);
+    }
+
+    private String normalizeQuery(String query) {
+        if (query == null || query.isBlank()) {
+            return null;
+        }
+        return query.trim();
     }
 
     private String normalizeNote(String adminNote) {

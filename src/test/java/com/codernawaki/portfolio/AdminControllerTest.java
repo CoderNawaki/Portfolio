@@ -18,6 +18,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -51,29 +54,61 @@ class AdminControllerTest {
         submission.setStatus(ContactSubmissionStatus.NEW);
         submission.setCreatedAt(Instant.parse("2026-04-08T10:15:00Z"));
 
-        when(contactService.findAllSubmissions()).thenReturn(List.of(submission));
+        when(contactService.findSubmissions("", null, PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(List.of(submission), PageRequest.of(0, 10), 1));
 
         mockMvc.perform(get("/admin/contact-submissions"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/contact-submissions"))
                 .andExpect(model().attributeExists("submissions"))
+                .andExpect(model().attributeExists("submissionsPage"))
                 .andExpect(model().attributeExists("availableStatuses"))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("lama@example.com")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("I would like to discuss a full stack role.")));
     }
 
     @Test
+    void shouldApplyFiltersWhenRenderingContactSubmissionsPage() throws Exception {
+        when(contactService.findSubmissions("lama", ContactSubmissionStatus.NEW, PageRequest.of(1, 10)))
+                .thenReturn(Page.empty(PageRequest.of(1, 10)));
+
+        mockMvc.perform(get("/admin/contact-submissions")
+                        .param("query", "lama")
+                        .param("status", "NEW")
+                        .param("page", "1"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("currentQuery", "lama"))
+                .andExpect(model().attribute("currentStatus", "NEW"));
+    }
+
+    @Test
     void shouldUpdateContactSubmissionAndRedirect() throws Exception {
         mockMvc.perform(post("/admin/contact-submissions/7")
                         .param("status", "REVIEWED")
-                        .param("adminNote", "Follow up this week."))
+                        .param("adminNote", "Follow up this week.")
+                        .param("query", "lama")
+                        .param("filterStatus", "NEW")
+                        .param("page", "1"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/admin/contact-submissions"))
+                .andExpect(redirectedUrl("/admin/contact-submissions?query=lama&status=NEW&page=1"))
                 .andExpect(flash().attribute("adminMessage", "Submission updated."));
 
         verify(contactService).updateSubmission(org.mockito.ArgumentMatchers.eq(7L),
                 argThat(form -> form.getStatus() == ContactSubmissionStatus.REVIEWED
                         && "Follow up this week.".equals(form.getAdminNote())));
+    }
+
+    @Test
+    void shouldDeleteContactSubmissionAndRedirect() throws Exception {
+        mockMvc.perform(post("/admin/contact-submissions/7/delete")
+                        .param("query", "lama")
+                        .param("filterStatus", "REVIEWED")
+                        .param("page", "0"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/contact-submissions?query=lama&status=REVIEWED&page=0"))
+                .andExpect(flash().attribute("adminMessage", "Submission deleted."));
+
+        verify(contactService).deleteSubmission(7L);
     }
 
     private ViewResolver thymeleafViewResolver() {
