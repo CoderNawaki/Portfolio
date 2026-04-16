@@ -50,7 +50,9 @@ public class ContactService {
     public Page<ContactSubmission> findSubmissions(String query,
                                                    ContactSubmissionStatus status,
                                                    Pageable pageable) {
-        return contactSubmissionRepository.search(normalizeQuery(query), status, pageable);
+        String normalized = normalizeQuery(query);
+        String searchPattern = normalized != null ? "%" + normalized.toLowerCase() + "%" : null;
+        return contactSubmissionRepository.search(searchPattern, status, pageable);
     }
 
     public void updateSubmission(long submissionId, UpdateContactSubmissionForm updateForm) {

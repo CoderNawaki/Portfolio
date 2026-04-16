@@ -12,11 +12,12 @@ public interface ContactSubmissionRepository extends JpaRepository<ContactSubmis
             select submission
             from ContactSubmission submission
             where (:status is null or submission.status = :status)
-              and (:query is null
-                   or lower(submission.name) like lower(concat('%', :query, '%'))
-                   or lower(submission.email) like lower(concat('%', :query, '%'))
-                   or lower(submission.message) like lower(concat('%', :query, '%'))
-                   or lower(coalesce(submission.adminNote, '')) like lower(concat('%', :query, '%')))
+              and (cast(:query as string) is null
+                   or lower(submission.name) like cast(:query as string)
+                   or lower(submission.email) like cast(:query as string)
+                   or lower(submission.message) like cast(:query as string)
+                   or (submission.adminNote is not null
+                       and lower(submission.adminNote) like cast(:query as string)))
             order by submission.createdAt desc
             """)
     Page<ContactSubmission> search(
