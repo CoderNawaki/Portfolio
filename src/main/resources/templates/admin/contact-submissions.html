@@ -134,10 +134,10 @@
 
         <nav th:if="${submissionsPage.totalPages > 1}" class="admin-pagination" aria-label="Submission pages">
             <a class="button button-secondary"
-               th:classappend="${!submissionsPage.hasPrevious()} ? ' is-disabled'"
-               th:href="${submissionsPage.hasPrevious()}
-                    ? @{/admin/contact-submissions(query=${currentQuery}, status=${currentStatus}, page=${submissionsPage.number - 1})}
-                    : '#'}">Previous</a>
+               th:classappend="${submissionsPage.first} ? ' is-disabled'"
+               th:href="${submissionsPage.first}
+                    ? '#'
+                    : @{/admin/contact-submissions(query=${currentQuery}, status=${currentStatus}, page=${submissionsPage.number - 1})}">Previous</a>
             <div class="admin-page-links">
                 <a th:each="pageNumber : ${#numbers.sequence(0, submissionsPage.totalPages - 1)}"
                    class="admin-page-link"
@@ -146,10 +146,10 @@
                    th:text="${pageNumber + 1}">1</a>
             </div>
             <a class="button button-secondary"
-               th:classappend="${!submissionsPage.hasNext()} ? ' is-disabled'"
-               th:href="${submissionsPage.hasNext()}
-                    ? @{/admin/contact-submissions(query=${currentQuery}, status=${currentStatus}, page=${submissionsPage.number + 1})}
-                    : '#'}">Next</a>
+               th:classappend="${submissionsPage.last} ? ' is-disabled'"
+               th:href="${submissionsPage.last}
+                    ? '#'
+                    : @{/admin/contact-submissions(query=${currentQuery}, status=${currentStatus}, page=${submissionsPage.number + 1})}">Next</a>
         </nav>
     </section>
 </main>
