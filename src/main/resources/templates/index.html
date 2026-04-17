@@ -152,7 +152,10 @@
                     <h3 th:text="${project.title()}">Project title</h3>
                     <p class="project-tagline" th:text="${project.tagline()}">Project tagline</p>
                     <p class="project-highlight" th:text="${project.highlight()}">Project highlight</p>
-                    <a class="project-link" th:href="${project.githubUrl()}" target="_blank" rel="noreferrer">View Repository</a>
+                    <div class="project-links">
+                        <a class="project-link" th:href="${project.githubUrl()}" target="_blank" rel="noreferrer">View Repository</a>
+                        <a class="project-link case-study-link" th:href="@{/projects/{slug}(slug=${project.slug()})}">Case Study &rarr;</a>
+                    </div>
                 </div>
                 <div class="project-body">
                     <div class="project-column">

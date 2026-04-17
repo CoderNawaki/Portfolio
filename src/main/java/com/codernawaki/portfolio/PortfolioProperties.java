@@ -54,6 +54,7 @@ public class PortfolioProperties {
     public void setProjects(List<FeaturedProjectProperties> projects) { this.projects = projects; }
 
     public static class FeaturedProjectProperties {
+        private String slug;
         private String title;
         private String tagline;
         private String stack;
@@ -65,6 +66,9 @@ public class PortfolioProperties {
         private String githubUrl;
         private String visibility;
         private String accessNote;
+
+        public String getSlug() { return slug; }
+        public void setSlug(String slug) { this.slug = slug; }
 
         public String getTitle() { return title; }
         public void setTitle(String title) { this.title = title; }

@@ -22,6 +22,7 @@ public class PortfolioService {
     public List<FeaturedProject> getFeaturedProjects() {
         return properties.getProjects().stream()
                 .map(p -> new FeaturedProject(
+                        p.getSlug(),
                         p.getTitle(),
                         p.getTagline(),
                         p.getStack(),

@@ -3,6 +3,7 @@ package com.codernawaki.portfolio;
 import java.io.Serializable;
 
 public record FeaturedProject(
+        String slug,
         String title,
         String tagline,
         String stack,
