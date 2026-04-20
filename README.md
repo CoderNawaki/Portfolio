@@ -11,9 +11,11 @@ This project is used as both a recruiter-facing portfolio site and a demonstrati
 - **Architectural Excellence**: Layered architecture with dedicated services, properties-backed configuration, and global model advice.
 - **Thymeleaf Fragments**: Reusable template components for a consistent UI across all pages.
 - **Validated Contact Flow**: Structured API responses with server-side validation.
-- **Admin Dashboard**: Protected area to review and manage contact submissions.
+- **Admin Dashboard**: Protected area to review, search, and manage contact submissions.
 - **Responsive UI**: Modern design with section navigation and progressive reveal effects.
 - **Operational Visibility**: Prometheus metrics, Loki logs, Tempo traces, and a provisioned Grafana dashboard for runtime inspection.
+- **Security & Resilience**: Redis-backed rate limiting with fallback to in-memory buckets.
+- **Database Evolution**: Flyway-based schema migrations for reproducible database state.
 
 ## Tech Stack
 
@@ -22,7 +24,9 @@ This project is used as both a recruiter-facing portfolio site and a demonstrati
 - Gradle
 - Thymeleaf (with Spring Security extras)
 - HTML, CSS, JavaScript
-- H2 (Runtime database)
+- PostgreSQL (Production), H2 (Local/Testing)
+- Redis (Rate limiting and caching)
+- Flyway (Database migrations)
 - Prometheus, Grafana, Loki, Promtail, Tempo, OpenTelemetry
 
 ## Project Structure
@@ -64,6 +68,7 @@ Example:
 portfolio.display-name=Lama Nawaraj
 portfolio.role=Full Stack Developer
 portfolio.bio=Your professional summary here...
+portfolio.projects[0].slug=new-project
 portfolio.projects[0].title=New Project
 ...
 ```

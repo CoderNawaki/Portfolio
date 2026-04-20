@@ -18,6 +18,7 @@ class PortfolioServiceTest {
         properties.setRole("Developer");
         
         PortfolioProperties.FeaturedProjectProperties project = new PortfolioProperties.FeaturedProjectProperties();
+        project.setSlug("project-1");
         project.setTitle("Project 1");
         project.setStack("Java");
         properties.setProjects(List.of(project));
@@ -34,6 +35,7 @@ class PortfolioServiceTest {
     void shouldMapPropertiesToFeaturedProjects() {
         List<FeaturedProject> projects = portfolioService.getFeaturedProjects();
         assertThat(projects).hasSize(1);
+        assertThat(projects.get(0).slug()).isEqualTo("project-1");
         assertThat(projects.get(0).title()).isEqualTo("Project 1");
         assertThat(projects.get(0).stack()).isEqualTo("Java");
     }
