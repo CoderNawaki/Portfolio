@@ -2,15 +2,21 @@ package com.codernawaki.portfolio;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 class ContactServiceTest {
 
@@ -54,5 +60,27 @@ class ContactServiceTest {
 
         assertThat(result.message()).isEqualTo("Thanks, your message has been received. I will get back to you soon.");
         assertThat(result.submittedName()).isEqualTo("Lama");
+    }
+
+    @Test
+    void shouldNormalizeQueryAndCallSearch() {
+        Pageable pageable = PageRequest.of(0, 10);
+        when(contactSubmissionRepository.search(eq("%test%"), eq(ContactSubmissionStatus.NEW), eq(pageable)))
+                .thenReturn(Page.empty());
+
+        contactService.findSubmissions("  TEST  ", ContactSubmissionStatus.NEW, pageable);
+
+        verify(contactSubmissionRepository).search(eq("%test%"), eq(ContactSubmissionStatus.NEW), eq(pageable));
+    }
+
+    @Test
+    void shouldHandleNullQueryInSearch() {
+        Pageable pageable = PageRequest.of(0, 10);
+        when(contactSubmissionRepository.search(eq(null), eq(null), eq(pageable)))
+                .thenReturn(Page.empty());
+
+        contactService.findSubmissions(null, null, pageable);
+
+        verify(contactSubmissionRepository).search(eq(null), eq(null), eq(pageable));
     }
 }
