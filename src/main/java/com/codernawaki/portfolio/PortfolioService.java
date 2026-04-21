@@ -1,6 +1,7 @@
 package com.codernawaki.portfolio;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -36,5 +37,11 @@ public class PortfolioService {
                         p.getAccessNote()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public Optional<FeaturedProject> findProjectBySlug(String slug) {
+        return getFeaturedProjects().stream()
+                .filter(project -> project.slug().equals(slug))
+                .findFirst();
     }
 }

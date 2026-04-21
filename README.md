@@ -2,7 +2,7 @@
 
 Spring Boot portfolio application for Lama Nawaraj, a full stack developer working mainly in Japan.
 
-This project is used as both a recruiter-facing portfolio site and a demonstration of iterative full stack improvement with Java, Spring Boot, template rendering, frontend polish, and tested contact handling.
+This project is a recruiter-facing portfolio application built to present Lama Nawaraj as a Java-first full stack developer working mainly in Japan. It also serves as a public engineering sample showing iterative improvement across backend structure, admin workflows, observability, and presentation quality.
 
 ## Highlights
 
@@ -11,11 +11,13 @@ This project is used as both a recruiter-facing portfolio site and a demonstrati
 - **Architectural Excellence**: Layered architecture with dedicated services, properties-backed configuration, and global model advice.
 - **Thymeleaf Fragments**: Reusable template components for a consistent UI across all pages.
 - **Validated Contact Flow**: Structured API responses with server-side validation.
+- **Case Study Pages**: Featured projects now have dedicated detail pages instead of dead outbound-only links.
 - **Admin Dashboard**: Protected area to review, search, and manage contact submissions.
 - **Responsive UI**: Modern design with section navigation and progressive reveal effects.
 - **Operational Visibility**: Prometheus metrics, Loki logs, Tempo traces, and a provisioned Grafana dashboard for runtime inspection.
 - **Security & Resilience**: Redis-backed rate limiting with fallback to in-memory buckets.
 - **Database Evolution**: Flyway-based schema migrations for reproducible database state.
+- **SEO & Share Metadata**: Canonical links, Open Graph/Twitter metadata, robots rules, sitemap, and manifest-backed web metadata.
 
 ## Tech Stack
 
@@ -59,6 +61,12 @@ This project is used as both a recruiter-facing portfolio site and a demonstrati
    - Portfolio: `http://localhost:8081/`
    - Admin Login: `http://localhost:8081/login`
 
+4. **Optional Public URL Configuration**:
+   For correct canonical and share metadata outside local development:
+   ```bash
+   export PORTFOLIO_SITE_URL=https://your-public-domain.example
+   ```
+
 ## Configuration
 
 You can update the portfolio content without changing Java code by editing `src/main/resources/application.properties`.
@@ -78,6 +86,12 @@ portfolio.projects[0].title=New Project
 ```bash
 ./gradlew build
 ```
+
+## Recruiter-Facing Pages
+
+- Home page: portfolio overview, skills, and featured projects
+- Project case study pages: `/projects/{slug}`
+- Admin inbox: secure review and management of contact submissions
 
 ## Monitoring Stack
 

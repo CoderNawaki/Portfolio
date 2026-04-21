@@ -11,6 +11,7 @@ public class PortfolioProperties {
     private String displayName;
     private String role;
     private String location;
+    private String siteUrl;
     private String githubUrl;
     private String email;
     private String resumeLabel;
@@ -28,6 +29,9 @@ public class PortfolioProperties {
 
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
+
+    public String getSiteUrl() { return siteUrl; }
+    public void setSiteUrl(String siteUrl) { this.siteUrl = siteUrl; }
 
     public String getGithubUrl() { return githubUrl; }
     public void setGithubUrl(String githubUrl) { this.githubUrl = githubUrl; }
