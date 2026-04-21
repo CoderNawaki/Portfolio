@@ -3,22 +3,29 @@
 <head th:fragment="head">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${displayName} + ' | Full Stack Developer'">Lama Nawaraj | Full Stack Developer</title>
-    <meta name="description"
+    <title th:text="${pageTitle}">Lama Nawaraj | Full Stack Developer in Japan</title>
+    <meta name="description" th:content="${pageDescription}"
           content="Full stack developer portfolio for Lama Nawaraj featuring Java, Spring Boot, frontend delivery, and project work in Japan.">
     <meta name="author" content="Lama Nawaraj">
     <meta name="theme-color" content="#b8502e">
-    <meta property="og:title" content="Lama Nawaraj | Full Stack Developer">
-    <meta property="og:description"
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" th:href="${pageUrl}">
+    <link rel="icon" type="image/png" th:href="@{/image.png}">
+    <link rel="apple-touch-icon" th:href="@{/image.png}">
+    <link rel="manifest" th:href="@{/site.webmanifest}">
+    <meta property="og:site_name" th:content="${displayName}">
+    <meta property="og:title" th:content="${pageTitle}" content="Lama Nawaraj | Full Stack Developer">
+    <meta property="og:description" th:content="${pageDescription}"
           content="Full stack developer portfolio featuring Java, Spring Boot, frontend delivery, and project work in Japan.">
     <meta property="og:type" content="website">
-    <meta property="og:image" th:content="@{/image.png}">
+    <meta property="og:url" th:content="${pageUrl}">
+    <meta property="og:image" th:content="${pageImageUrl}">
     <meta property="og:locale" content="en_US">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Lama Nawaraj | Full Stack Developer">
-    <meta name="twitter:description"
+    <meta name="twitter:title" th:content="${pageTitle}" content="Lama Nawaraj | Full Stack Developer">
+    <meta name="twitter:description" th:content="${pageDescription}"
           content="Full stack developer portfolio featuring Java, Spring Boot, frontend delivery, and project work in Japan.">
-    <meta name="twitter:image" th:content="@{/image.png}">
+    <meta name="twitter:image" th:content="${pageImageUrl}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"

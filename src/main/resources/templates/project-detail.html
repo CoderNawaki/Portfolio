@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="project-detail-main">
+    <section class="project-detail-hero section reveal">
+        <div class="project-detail-intro">
+            <p class="eyebrow">Case Study</p>
+            <h1 th:text="${project.title()}">Project title</h1>
+            <p class="project-detail-tagline" th:text="${project.tagline()}">Project tagline</p>
+            <div class="chip-row">
+                <span class="chip" th:text="${project.visibility()}">Public</span>
+                <span class="chip" th:text="${project.stack()}">Java, Spring Boot</span>
+            </div>
+            <div class="hero-actions">
+                <a class="button button-primary" th:href="${project.githubUrl()}" target="_blank" rel="noreferrer">View Repository</a>
+                <a class="button button-secondary" th:href="@{/#projects}">Back to Portfolio</a>
+            </div>
+        </div>
+        <div class="hero-panel">
+            <p class="panel-title">Why this project matters</p>
+            <p th:text="${project.highlight()}">Project highlight</p>
+            <p th:text="${project.outcome()}">Outcome summary</p>
+        </div>
+    </section>
+
+    <section class="section project-detail-grid reveal">
+        <article class="project-detail-card">
+            <p class="project-label">Problem</p>
+            <p th:text="${project.problem()}">Problem statement</p>
+        </article>
+        <article class="project-detail-card">
+            <p class="project-label">Backend contribution</p>
+            <p th:text="${project.backendFocus()}">Backend focus</p>
+        </article>
+        <article class="project-detail-card">
+            <p class="project-label">Frontend contribution</p>
+            <p th:text="${project.frontendFocus()}">Frontend focus</p>
+        </article>
+        <article class="project-detail-card">
+            <p class="project-label">Access note</p>
+            <p th:text="${project.accessNote()}">Repository note</p>
+        </article>
+    </section>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

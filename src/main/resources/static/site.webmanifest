@@ -1,0 +1,15 @@
+{
+  "name": "Lama Nawaraj Portfolio",
+  "short_name": "Lama Portfolio",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4efe5",
+  "theme_color": "#b8502e",
+  "icons": [
+    {
+      "src": "/image.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
