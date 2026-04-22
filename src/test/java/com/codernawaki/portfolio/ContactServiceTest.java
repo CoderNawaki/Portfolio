@@ -64,7 +64,7 @@ class ContactServiceTest {
 
     @Test
     void shouldNormalizeQueryAndCallSearch() {
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(0, 10, AdminSubmissionSort.NEWEST.toSort());
         when(contactSubmissionRepository.search(eq("%test%"), eq(ContactSubmissionStatus.NEW), eq(pageable)))
                 .thenReturn(Page.empty());
 
@@ -75,7 +75,7 @@ class ContactServiceTest {
 
     @Test
     void shouldHandleNullQueryInSearch() {
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(0, 10, AdminSubmissionSort.NEWEST.toSort());
         when(contactSubmissionRepository.search(eq(null), eq(null), eq(pageable)))
                 .thenReturn(Page.empty());
 

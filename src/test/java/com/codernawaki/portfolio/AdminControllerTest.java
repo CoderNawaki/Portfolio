@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,8 +55,8 @@ class AdminControllerTest {
         submission.setStatus(ContactSubmissionStatus.NEW);
         submission.setCreatedAt(Instant.parse("2026-04-08T10:15:00Z"));
 
-        when(contactService.findSubmissions("", null, PageRequest.of(0, 10)))
-                .thenReturn(new PageImpl<>(List.of(submission), PageRequest.of(0, 10), 1));
+        when(contactService.findSubmissions("", null, PageRequest.of(0, 10, AdminSubmissionSort.NEWEST.toSort())))
+                .thenReturn(new PageImpl<>(List.of(submission), PageRequest.of(0, 10, AdminSubmissionSort.NEWEST.toSort()), 1));
 
         mockMvc.perform(get("/admin/contact-submissions"))
                 .andExpect(status().isOk())
@@ -63,22 +64,36 @@ class AdminControllerTest {
                 .andExpect(model().attributeExists("submissions"))
                 .andExpect(model().attributeExists("submissionsPage"))
                 .andExpect(model().attributeExists("availableStatuses"))
+                .andExpect(model().attribute("currentSort", "NEWEST"))
+                .andExpect(model().attributeExists("selectedSubmission"))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("lama@example.com")))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("I would like to discuss a full stack role.")));
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("View details")));
     }
 
     @Test
     void shouldApplyFiltersWhenRenderingContactSubmissionsPage() throws Exception {
-        when(contactService.findSubmissions("lama", ContactSubmissionStatus.NEW, PageRequest.of(1, 10)))
-                .thenReturn(Page.empty(PageRequest.of(1, 10)));
+        ContactSubmission submission = new ContactSubmission();
+        submission.setName("Lama");
+        submission.setEmail("lama@example.com");
+        submission.setMessage("I would like to discuss a role.");
+        submission.setStatus(ContactSubmissionStatus.NEW);
+        submission.setCreatedAt(Instant.parse("2026-04-08T10:15:00Z"));
+        when(contactService.findSubmissions("lama", ContactSubmissionStatus.NEW,
+                PageRequest.of(1, 10, AdminSubmissionSort.OLDEST.toSort())))
+                .thenReturn(new PageImpl<>(List.of(submission), PageRequest.of(1, 10, AdminSubmissionSort.OLDEST.toSort()), 1));
+        when(contactService.findSubmission(9L)).thenReturn(Optional.of(submission));
 
         mockMvc.perform(get("/admin/contact-submissions")
                         .param("query", "lama")
                         .param("status", "NEW")
+                        .param("sort", "OLDEST")
+                        .param("selected", "9")
                         .param("page", "1"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("currentQuery", "lama"))
-                .andExpect(model().attribute("currentStatus", "NEW"));
+                .andExpect(model().attribute("currentStatus", "NEW"))
+                .andExpect(model().attribute("currentSort", "OLDEST"))
+                .andExpect(model().attributeExists("selectedSubmission"));
     }
 
     @Test
@@ -88,9 +103,10 @@ class AdminControllerTest {
                         .param("adminNote", "Follow up this week.")
                         .param("query", "lama")
                         .param("filterStatus", "NEW")
+                        .param("sort", "STATUS")
                         .param("page", "1"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/admin/contact-submissions?query=lama&status=NEW&page=1"))
+                .andExpect(redirectedUrl("/admin/contact-submissions?query=lama&status=NEW&sort=STATUS&page=1&selected=7"))
                 .andExpect(flash().attribute("adminMessage", "Submission updated."));
 
         verify(contactService).updateSubmission(org.mockito.ArgumentMatchers.eq(7L),
@@ -103,9 +119,10 @@ class AdminControllerTest {
         mockMvc.perform(post("/admin/contact-submissions/7/delete")
                         .param("query", "lama")
                         .param("filterStatus", "REVIEWED")
+                        .param("sort", "NAME")
                         .param("page", "0"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/admin/contact-submissions?query=lama&status=REVIEWED&page=0"))
+                .andExpect(redirectedUrl("/admin/contact-submissions?query=lama&status=REVIEWED&sort=NAME&page=0"))
                 .andExpect(flash().attribute("adminMessage", "Submission deleted."));
 
         verify(contactService).deleteSubmission(7L);

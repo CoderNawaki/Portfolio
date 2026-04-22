@@ -27,17 +27,22 @@ public class AdminController {
     public String contactSubmissions(
             @RequestParam(defaultValue = "") String query,
             @RequestParam(required = false) ContactSubmissionStatus status,
+            @RequestParam(defaultValue = "NEWEST") AdminSubmissionSort sort,
+            @RequestParam(required = false) Long selected,
             @RequestParam(defaultValue = "0") int page,
             Model model) {
         int safePage = Math.max(page, 0);
         Page<ContactSubmission> submissionsPage = contactService.findSubmissions(
-                query, status, PageRequest.of(safePage, SUBMISSIONS_PER_PAGE));
+                query, status, PageRequest.of(safePage, SUBMISSIONS_PER_PAGE, sort.toSort()));
 
         model.addAttribute("submissionsPage", submissionsPage);
         model.addAttribute("submissions", submissionsPage.getContent());
         model.addAttribute("availableStatuses", ContactSubmissionStatus.values());
+        model.addAttribute("availableSorts", AdminSubmissionSort.values());
         model.addAttribute("currentQuery", query);
         model.addAttribute("currentStatus", status == null ? "" : status.name());
+        model.addAttribute("currentSort", sort.name());
+        model.addAttribute("selectedSubmission", resolveSelectedSubmission(selected, submissionsPage));
         return "admin/contact-submissions";
     }
 
@@ -47,11 +52,13 @@ public class AdminController {
             @Valid @ModelAttribute UpdateContactSubmissionForm updateForm,
             @RequestParam(defaultValue = "") String query,
             @RequestParam(name = "filterStatus", required = false) ContactSubmissionStatus status,
+            @RequestParam(defaultValue = "NEWEST") AdminSubmissionSort sort,
             @RequestParam(defaultValue = "0") int page,
             RedirectAttributes redirectAttributes) {
         contactService.updateSubmission(submissionId, updateForm);
         redirectAttributes.addFlashAttribute("adminMessage", "Submission updated.");
-        populateRedirectState(redirectAttributes, query, status, page);
+        populateRedirectState(redirectAttributes, query, status, sort, page);
+        redirectAttributes.addAttribute("selected", submissionId);
         return "redirect:/admin/contact-submissions";
     }
 
@@ -60,17 +67,19 @@ public class AdminController {
             @PathVariable long submissionId,
             @RequestParam(defaultValue = "") String query,
             @RequestParam(name = "filterStatus", required = false) ContactSubmissionStatus status,
+            @RequestParam(defaultValue = "NEWEST") AdminSubmissionSort sort,
             @RequestParam(defaultValue = "0") int page,
             RedirectAttributes redirectAttributes) {
         contactService.deleteSubmission(submissionId);
         redirectAttributes.addFlashAttribute("adminMessage", "Submission deleted.");
-        populateRedirectState(redirectAttributes, query, status, page);
+        populateRedirectState(redirectAttributes, query, status, sort, page);
         return "redirect:/admin/contact-submissions";
     }
 
     private void populateRedirectState(RedirectAttributes redirectAttributes,
                                        String query,
                                        ContactSubmissionStatus status,
+                                       AdminSubmissionSort sort,
                                        int page) {
         if (query != null && !query.isBlank()) {
             redirectAttributes.addAttribute("query", query);
@@ -78,6 +87,15 @@ public class AdminController {
         if (status != null) {
             redirectAttributes.addAttribute("status", status);
         }
+        redirectAttributes.addAttribute("sort", sort);
         redirectAttributes.addAttribute("page", Math.max(page, 0));
+    }
+
+    private ContactSubmission resolveSelectedSubmission(Long selectedSubmissionId,
+                                                        Page<ContactSubmission> submissionsPage) {
+        if (selectedSubmissionId != null) {
+            return contactService.findSubmission(selectedSubmissionId).orElse(null);
+        }
+        return submissionsPage.getContent().stream().findFirst().orElse(null);
     }
 }

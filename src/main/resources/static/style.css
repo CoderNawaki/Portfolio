@@ -297,6 +297,49 @@ main { padding: 2rem 0 5rem; }
 .admin-table-wrap {
     overflow-x: auto;
 }
+.admin-detail-card {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+}
+.admin-detail-header,
+.admin-detail-meta,
+.admin-dialog-content {
+    display: grid;
+    gap: 1rem;
+}
+.admin-detail-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 1.5rem;
+}
+.admin-detail-panel {
+    padding: 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.72);
+}
+.admin-detail-panel h4 {
+    margin-bottom: 1rem;
+}
+.admin-detail-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0 0 1rem;
+}
+.admin-detail-meta dt {
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+.admin-detail-meta dd {
+    margin: 0.2rem 0 0;
+}
+.admin-message-body {
+    margin: 0;
+    white-space: pre-wrap;
+    line-height: 1.7;
+}
 .submission-table {
     width: 100%;
     border-collapse: collapse;
@@ -318,6 +361,9 @@ main { padding: 2rem 0 5rem; }
 .note-cell {
     min-width: 15rem;
 }
+.submission-row-selected {
+    background: rgba(184, 80, 46, 0.08);
+}
 .status-pill {
     display: inline-flex;
     padding: 0.35rem 0.8rem;
@@ -327,12 +373,24 @@ main { padding: 2rem 0 5rem; }
     font-size: 0.82rem;
     font-weight: 700;
 }
+.status-pill-new {
+    background: rgba(184, 80, 46, 0.12);
+    color: var(--accent-dark);
+}
+.status-pill-reviewed {
+    background: rgba(43, 108, 176, 0.14);
+    color: #1f4e80;
+}
+.status-pill-replied {
+    background: rgba(42, 122, 87, 0.14);
+    color: #1f6e4e;
+}
 .empty-value {
     color: var(--muted);
     font-style: italic;
 }
 .action-cell {
-    min-width: 18rem;
+    min-width: 10rem;
 }
 .submission-update-form,
 .submission-delete-form {
@@ -341,6 +399,21 @@ main { padding: 2rem 0 5rem; }
 }
 .admin-delete-button {
     color: var(--error);
+}
+.admin-dialog {
+    border: none;
+    border-radius: var(--radius-lg);
+    padding: 0;
+    max-width: 26rem;
+    width: calc(100% - 2rem);
+    box-shadow: var(--shadow);
+}
+.admin-dialog::backdrop {
+    background: rgba(18, 16, 14, 0.45);
+}
+.admin-dialog-content {
+    padding: 1.5rem;
+    background: #fffaf4;
 }
 .admin-pagination {
     margin-top: 1.25rem;
@@ -413,6 +486,10 @@ main { padding: 2rem 0 5rem; }
     .admin-pagination {
         flex-direction: column;
         align-items: stretch;
+    }
+    .admin-detail-grid,
+    .admin-detail-meta {
+        grid-template-columns: 1fr;
     }
     .project-detail-hero,
     .project-detail-grid {

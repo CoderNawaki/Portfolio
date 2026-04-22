@@ -47,6 +47,17 @@
                     </option>
                 </select>
             </label>
+            <label class="admin-filter-field">
+                <span>Sort</span>
+                <select name="sort">
+                    <option th:each="availableSort : ${availableSorts}"
+                            th:value="${availableSort}"
+                            th:text="${availableSort.label}"
+                            th:selected="${currentSort == availableSort.name()}">
+                        Newest first
+                    </option>
+                </select>
+            </label>
             <div class="admin-filter-actions">
                 <button class="button button-primary" type="submit">Apply</button>
                 <a class="button button-secondary" th:href="@{/admin/contact-submissions}">Reset</a>
@@ -65,95 +76,182 @@
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Message</th>
                     <th>Status</th>
-                    <th>Admin note</th>
                     <th>Received</th>
+                    <th>Preview</th>
                     <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="submission : ${submissions}">
+                <tr th:each="submission : ${submissions}"
+                    th:classappend="${selectedSubmission != null and selectedSubmission.id == submission.id} ? ' submission-row-selected'">
                     <td th:text="${submission.name}">Lama</td>
                     <td>
                         <a th:href="'mailto:' + ${submission.email}" th:text="${submission.email}">lama@example.com</a>
                     </td>
-                    <td class="message-cell" th:text="${submission.message}">Message body</td>
                     <td>
-                        <span class="status-pill" th:text="${submission.status}">NEW</span>
-                    </td>
-                    <td class="note-cell">
-                        <p th:if="${submission.adminNote}" th:text="${submission.adminNote}">Follow-up note</p>
-                        <span th:unless="${submission.adminNote}" class="empty-value">No note yet</span>
+                        <span class="status-pill"
+                              th:classappend="${submission.status != null ? ' status-pill-' + #strings.toLowerCase(submission.status.name()) : ''}"
+                              th:text="${submission.status != null ? submission.status : 'UNKNOWN'}">NEW</span>
                     </td>
                     <td th:text="${#temporals.format(submission.createdAt, 'yyyy-MM-dd HH:mm')}">2026-04-08 19:30</td>
+                    <td class="message-cell" th:text="${#strings.abbreviate(submission.message, 120)}">Message body</td>
                     <td class="action-cell">
-                        <form class="submission-update-form"
-                              th:action="@{/admin/contact-submissions/{submissionId}(submissionId=${submission.id})}"
-                              method="post">
-                            <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                            <input type="hidden" name="query" th:value="${currentQuery}">
-                            <input type="hidden" name="filterStatus" th:value="${currentStatus}">
-                            <input type="hidden" name="page" th:value="${submissionsPage.number}">
-                            <label>
-                                <span>Status</span>
-                                <select name="status">
-                                    <option th:each="availableStatus : ${availableStatuses}"
-                                            th:value="${availableStatus}"
-                                            th:text="${availableStatus}"
-                                            th:selected="${availableStatus == submission.status}">
-                                        NEW
-                                    </option>
-                                </select>
-                            </label>
-                            <label>
-                                <span>Note</span>
-                                <textarea name="adminNote"
-                                          rows="4"
-                                          placeholder="Add recruiter follow-up details..."
-                                          th:text="${submission.adminNote}"></textarea>
-                            </label>
-                            <div class="admin-form-actions">
-                                <button class="button button-primary admin-save-button" type="submit">Save</button>
-                            </div>
-                        </form>
-                        <form class="submission-delete-form"
-                              th:action="@{/admin/contact-submissions/{submissionId}/delete(submissionId=${submission.id})}"
-                              method="post">
-                            <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                            <input type="hidden" name="query" th:value="${currentQuery}">
-                            <input type="hidden" name="filterStatus" th:value="${currentStatus}">
-                            <input type="hidden" name="page" th:value="${submissionsPage.number}">
-                            <button class="button button-secondary admin-delete-button" type="submit">Delete</button>
-                        </form>
+                        <a class="button button-secondary"
+                           th:href="@{/admin/contact-submissions(query=${currentQuery}, status=${currentStatus}, sort=${currentSort}, page=${submissionsPage.number}, selected=${submission.id})}">
+                            View details
+                        </a>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
 
+        <section th:if="${selectedSubmission != null}" class="admin-detail-card">
+            <div class="admin-detail-header">
+                <div>
+                    <p class="eyebrow">Selected submission</p>
+                    <h3 th:text="${selectedSubmission.name}">Lama</h3>
+                </div>
+                <span class="status-pill"
+                      th:classappend="${selectedSubmission.status != null ? ' status-pill-' + #strings.toLowerCase(selectedSubmission.status.name()) : ''}"
+                      th:text="${selectedSubmission.status != null ? selectedSubmission.status : 'UNKNOWN'}">NEW</span>
+            </div>
+
+            <div class="admin-detail-grid">
+                <div class="admin-detail-panel">
+                    <h4>Message</h4>
+                    <dl class="admin-detail-meta">
+                        <div>
+                            <dt>Email</dt>
+                            <dd><a th:href="'mailto:' + ${selectedSubmission.email}" th:text="${selectedSubmission.email}">lama@example.com</a></dd>
+                        </div>
+                        <div>
+                            <dt>Received</dt>
+                            <dd th:text="${#temporals.format(selectedSubmission.createdAt, 'yyyy-MM-dd HH:mm')}">2026-04-08 19:30</dd>
+                        </div>
+                    </dl>
+                    <p class="admin-message-body" th:text="${selectedSubmission.message}">Message body</p>
+                </div>
+
+                <div class="admin-detail-panel">
+                    <h4>Admin follow-up</h4>
+                    <form class="submission-update-form"
+                          th:action="@{/admin/contact-submissions/{submissionId}(submissionId=${selectedSubmission.id})}"
+                          method="post">
+                        <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <input type="hidden" name="query" th:value="${currentQuery}">
+                        <input type="hidden" name="filterStatus" th:value="${currentStatus}">
+                        <input type="hidden" name="sort" th:value="${currentSort}">
+                        <input type="hidden" name="page" th:value="${submissionsPage.number}">
+                        <label>
+                            <span>Status</span>
+                            <select name="status">
+                                <option th:each="availableStatus : ${availableStatuses}"
+                                        th:value="${availableStatus}"
+                                        th:text="${availableStatus}"
+                                        th:selected="${availableStatus == selectedSubmission.status}">
+                                    NEW
+                                </option>
+                            </select>
+                        </label>
+                        <label>
+                            <span>Note</span>
+                            <textarea name="adminNote"
+                                      rows="6"
+                                      placeholder="Add recruiter follow-up details..."
+                                      th:text="${selectedSubmission.adminNote}"></textarea>
+                        </label>
+                        <div class="admin-form-actions">
+                            <button class="button button-primary admin-save-button" type="submit">Save changes</button>
+                        </div>
+                    </form>
+
+                    <form class="submission-delete-form"
+                          th:id="'delete-submission-' + ${selectedSubmission.id}"
+                          th:action="@{/admin/contact-submissions/{submissionId}/delete(submissionId=${selectedSubmission.id})}"
+                          method="post">
+                        <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <input type="hidden" name="query" th:value="${currentQuery}">
+                        <input type="hidden" name="filterStatus" th:value="${currentStatus}">
+                        <input type="hidden" name="sort" th:value="${currentSort}">
+                        <input type="hidden" name="page" th:value="${submissionsPage.number}">
+                        <button class="button button-secondary admin-delete-button"
+                                type="button"
+                                th:attr="data-delete-form=${'delete-submission-' + selectedSubmission.id}">
+                            Delete submission
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
         <nav th:if="${submissionsPage.totalPages > 1}" class="admin-pagination" aria-label="Submission pages">
             <a class="button button-secondary"
                th:classappend="${submissionsPage.first} ? ' is-disabled'"
                th:href="${submissionsPage.first}
                     ? '#'
-                    : @{/admin/contact-submissions(query=${currentQuery}, status=${currentStatus}, page=${submissionsPage.number - 1})}">Previous</a>
+                    : @{/admin/contact-submissions(query=${currentQuery}, status=${currentStatus}, sort=${currentSort}, page=${submissionsPage.number - 1}, selected=${selectedSubmission != null ? selectedSubmission.id : null})}">Previous</a>
             <div class="admin-page-links">
                 <a th:each="pageNumber : ${#numbers.sequence(0, submissionsPage.totalPages - 1)}"
                    class="admin-page-link"
                    th:classappend="${pageNumber == submissionsPage.number} ? ' is-active'"
-                   th:href="@{/admin/contact-submissions(query=${currentQuery}, status=${currentStatus}, page=${pageNumber})}"
+                   th:href="@{/admin/contact-submissions(query=${currentQuery}, status=${currentStatus}, sort=${currentSort}, page=${pageNumber}, selected=${selectedSubmission != null ? selectedSubmission.id : null})}"
                    th:text="${pageNumber + 1}">1</a>
             </div>
             <a class="button button-secondary"
                th:classappend="${submissionsPage.last} ? ' is-disabled'"
                th:href="${submissionsPage.last}
                     ? '#'
-                    : @{/admin/contact-submissions(query=${currentQuery}, status=${currentStatus}, page=${submissionsPage.number + 1})}">Next</a>
+                    : @{/admin/contact-submissions(query=${currentQuery}, status=${currentStatus}, sort=${currentSort}, page=${submissionsPage.number + 1}, selected=${selectedSubmission != null ? selectedSubmission.id : null})}">Next</a>
         </nav>
     </section>
 </main>
 
+<dialog id="delete-confirm-dialog" class="admin-dialog">
+    <form method="dialog" class="admin-dialog-content">
+        <h3>Delete submission?</h3>
+        <p>This action cannot be undone.</p>
+        <div class="admin-form-actions">
+            <button class="button button-secondary" type="submit">Cancel</button>
+            <button class="button button-primary admin-delete-confirm" type="button">Delete</button>
+        </div>
+    </form>
+</dialog>
+
 <footer th:replace="~{fragments :: footer}"></footer>
+<script>
+    (() => {
+        const dialog = document.getElementById('delete-confirm-dialog');
+        const confirmButton = document.querySelector('.admin-delete-confirm');
+        let formId = null;
+
+        document.querySelectorAll('[data-delete-form]').forEach((button) => {
+            button.addEventListener('click', () => {
+                formId = button.dataset.deleteForm;
+                if (dialog && typeof dialog.showModal === 'function') {
+                    dialog.showModal();
+                    return;
+                }
+                const form = document.getElementById(formId);
+                if (form && window.confirm('Delete this submission?')) {
+                    form.submit();
+                }
+            });
+        });
+
+        if (confirmButton) {
+            confirmButton.addEventListener('click', () => {
+                const form = formId ? document.getElementById(formId) : null;
+                if (dialog) {
+                    dialog.close();
+                }
+                if (form) {
+                    form.submit();
+                }
+            });
+        }
+    })();
+</script>
 </body>
 </html>
