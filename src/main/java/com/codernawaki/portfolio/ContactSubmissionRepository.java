@@ -18,7 +18,6 @@ public interface ContactSubmissionRepository extends JpaRepository<ContactSubmis
                    or lower(submission.message) like cast(:query as string)
                    or (submission.adminNote is not null
                        and lower(submission.adminNote) like cast(:query as string)))
-            order by submission.createdAt desc
             """)
     Page<ContactSubmission> search(
             @Param("query") String query,
