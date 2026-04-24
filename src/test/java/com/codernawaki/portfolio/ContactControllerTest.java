@@ -14,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 class ContactControllerTest {
 
@@ -67,5 +69,25 @@ class ContactControllerTest {
                                 }
                                 """))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnConflictPayloadForDuplicateSubmission() throws Exception {
+        when(contactService.submit(any())).thenThrow(new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "This message was already submitted recently. Please wait before sending it again."));
+
+        mockMvc.perform(post("/submitContactForm")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Lama",
+                                  "email": "lama@example.com",
+                                  "message": "I would like to discuss a full stack role."
+                                }
+                                """))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("This message was already submitted recently. Please wait before sending it again."));
     }
 }

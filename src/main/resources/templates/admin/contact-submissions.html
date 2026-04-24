@@ -61,6 +61,10 @@
             <div class="admin-filter-actions">
                 <button class="button button-primary" type="submit">Apply</button>
                 <a class="button button-secondary" th:href="@{/admin/contact-submissions}">Reset</a>
+                <a class="button button-secondary"
+                   th:href="@{/admin/contact-submissions/export(query=${currentQuery}, status=${currentStatus}, sort=${currentSort})}">
+                    Export CSV
+                </a>
             </div>
         </form>
 

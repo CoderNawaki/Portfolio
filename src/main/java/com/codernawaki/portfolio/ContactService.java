@@ -2,9 +2,13 @@ package com.codernawaki.portfolio;
 
 
 import io.micrometer.core.instrument.Timer;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,6 +17,8 @@ import java.util.Optional;
 
 @Service
 public class ContactService {
+
+    private static final Duration DUPLICATE_SUBMISSION_WINDOW = Duration.ofHours(24);
 
     private final ContactSubmissionRepository contactSubmissionRepository;
     private final EmailService emailService;
@@ -31,6 +37,8 @@ public class ContactService {
         String outcome = "failed";
 
         try {
+            ensureNotDuplicate(contactForm);
+
             ContactSubmission submission = new ContactSubmission();
             submission.setName(contactForm.getName());
             submission.setEmail(contactForm.getEmail());
@@ -61,6 +69,31 @@ public class ContactService {
         return contactSubmissionRepository.findById(submissionId);
     }
 
+    public String exportSubmissionsAsCsv(String query,
+                                         ContactSubmissionStatus status,
+                                         Sort sort) {
+        List<ContactSubmission> submissions = contactSubmissionRepository.search(buildSearchPattern(query), status, sort);
+        StringBuilder csv = new StringBuilder();
+        csv.append("id,name,email,status,created_at,admin_note,message\n");
+        for (ContactSubmission submission : submissions) {
+            csv.append(csvValue(submission.getId()))
+                    .append(',')
+                    .append(csvValue(submission.getName()))
+                    .append(',')
+                    .append(csvValue(submission.getEmail()))
+                    .append(',')
+                    .append(csvValue(submission.getStatus()))
+                    .append(',')
+                    .append(csvValue(submission.getCreatedAt()))
+                    .append(',')
+                    .append(csvValue(submission.getAdminNote()))
+                    .append(',')
+                    .append(csvValue(submission.getMessage()))
+                    .append('\n');
+        }
+        return csv.toString();
+    }
+
     public void updateSubmission(long submissionId, UpdateContactSubmissionForm updateForm) {
         ContactSubmission submission = contactSubmissionRepository.findById(submissionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Submission not found."));
@@ -84,11 +117,37 @@ public class ContactService {
         return query.trim();
     }
 
+    private String buildSearchPattern(String query) {
+        String normalized = normalizeQuery(query);
+        return normalized != null ? "%" + normalized.toLowerCase(Locale.ROOT) + "%" : null;
+    }
+
     private String normalizeNote(String adminNote) {
         if (adminNote == null || adminNote.isBlank()) {
             return null;
         }
 
         return adminNote.trim();
+    }
+
+    private void ensureNotDuplicate(ContactForm contactForm) {
+        Instant duplicateThreshold = Instant.now().minus(DUPLICATE_SUBMISSION_WINDOW);
+        boolean duplicateExists = contactSubmissionRepository.existsByEmailIgnoreCaseAndMessageAndCreatedAtAfter(
+                contactForm.getEmail(),
+                contactForm.getMessage(),
+                duplicateThreshold);
+        if (duplicateExists) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "This message was already submitted recently. Please wait before sending it again.");
+        }
+    }
+
+    private String csvValue(Object value) {
+        if (value == null) {
+            return "\"\"";
+        }
+        String normalized = String.valueOf(value).replace("\"", "\"\"");
+        return '"' + normalized + '"';
     }
 }

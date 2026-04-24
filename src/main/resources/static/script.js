@@ -81,10 +81,10 @@ function initContactForm() {
                 body: JSON.stringify(formData)
             });
 
-            const payload = await response.json();
+            const payload = await readResponsePayload(response);
             if (!response.ok) {
                 applyFieldErrors(fields, payload.fieldErrors || {});
-                setFormStatus(formStatus, payload.message || "Unable to submit the form.", true);
+                setFormStatus(formStatus, buildErrorMessage(response, payload), true);
                 return;
             }
 
@@ -95,6 +95,32 @@ function initContactForm() {
             setFormStatus(formStatus, "Unable to submit the form right now. Please try again.", true);
         }
     });
+}
+
+async function readResponsePayload(response) {
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+        return await response.json();
+    }
+
+    const text = await response.text();
+    return {
+        success: response.ok,
+        message: text,
+        fieldErrors: {}
+    };
+}
+
+function buildErrorMessage(response, payload) {
+    if (payload.message) {
+        const retryAfter = response.headers.get("X-Rate-Limit-Retry-After-Seconds");
+        if (response.status === 429 && retryAfter) {
+            return `${payload.message} Try again in about ${retryAfter} seconds.`;
+        }
+        return payload.message;
+    }
+
+    return "Unable to submit the form.";
 }
 
 function validateForm(fields, formStatus) {

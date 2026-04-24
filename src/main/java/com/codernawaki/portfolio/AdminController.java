@@ -3,6 +3,9 @@ package com.codernawaki.portfolio;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +24,18 @@ public class AdminController {
 
     public AdminController(ContactService contactService) {
         this.contactService = contactService;
+    }
+
+    @GetMapping("/admin/contact-submissions/export")
+    public ResponseEntity<String> exportContactSubmissions(
+            @RequestParam(defaultValue = "") String query,
+            @RequestParam(required = false) ContactSubmissionStatus status,
+            @RequestParam(defaultValue = "NEWEST") AdminSubmissionSort sort) {
+        String csv = contactService.exportSubmissionsAsCsv(query, status, sort.toSort());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"contact-submissions.csv\"")
+                .contentType(new MediaType("text", "csv"))
+                .body(csv);
     }
 
     @GetMapping("/admin/contact-submissions")
