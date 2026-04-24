@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import jakarta.validation.Valid;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -38,5 +39,12 @@ class ContactController {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ContactResponse(false, "Please correct the highlighted fields.", fieldErrors));
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ContactResponse> handleResponseStatusException(ResponseStatusException exception) {
+        HttpStatus status = HttpStatus.valueOf(exception.getStatusCode().value());
+        return ResponseEntity.status(status)
+                .body(new ContactResponse(false, exception.getReason(), Map.of()));
     }
 }

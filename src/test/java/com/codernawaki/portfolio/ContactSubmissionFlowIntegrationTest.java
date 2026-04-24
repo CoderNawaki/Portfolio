@@ -82,4 +82,32 @@ class ContactSubmissionFlowIntegrationTest {
 
         assertThat(contactSubmissionRepository.count()).isZero();
     }
+
+    @Test
+    void shouldRejectDuplicateSubmissionWithoutPersistingSecondCopy() throws Exception {
+        mockMvc.perform(post("/submitContactForm")
+                        .contentType("application/json")
+                        .content("""
+                                {
+                                  "name": "Lama Nawaraj",
+                                  "email": "lama@example.com",
+                                  "message": "Interested in discussing a full stack role."
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/submitContactForm")
+                        .contentType("application/json")
+                        .content("""
+                                {
+                                  "name": "Lama Nawaraj",
+                                  "email": "lama@example.com",
+                                  "message": "Interested in discussing a full stack role."
+                                }
+                                """))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("This message was already submitted recently. Please wait before sending it again."));
+
+        assertThat(contactSubmissionRepository.count()).isEqualTo(1);
+    }
 }

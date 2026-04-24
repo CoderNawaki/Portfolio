@@ -3,20 +3,21 @@ package com.codernawaki.portfolio;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
-import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 class ContactServiceTest {
 
@@ -35,6 +36,9 @@ class ContactServiceTest {
 
     @Test
     void shouldPersistSubmissionAndSendNotification() {
+        when(contactSubmissionRepository.existsByEmailIgnoreCaseAndMessageAndCreatedAtAfter(
+                eq("lama@example.com"), eq("I would like to discuss a full stack role."), any(Instant.class)))
+                .thenReturn(false);
         when(contactSubmissionRepository.save(any(ContactSubmission.class)))
                 .thenAnswer(invocation -> {
                     ContactSubmission submission = invocation.getArgument(0);
@@ -60,6 +64,27 @@ class ContactServiceTest {
 
         assertThat(result.message()).isEqualTo("Thanks, your message has been received. I will get back to you soon.");
         assertThat(result.submittedName()).isEqualTo("Lama");
+    }
+
+    @Test
+    void shouldRejectDuplicateSubmissionWithinProtectionWindow() {
+        ContactForm contactForm = new ContactForm();
+        contactForm.setName("Lama");
+        contactForm.setEmail("lama@example.com");
+        contactForm.setMessage("I would like to discuss a full stack role.");
+
+        when(contactSubmissionRepository.existsByEmailIgnoreCaseAndMessageAndCreatedAtAfter(
+                eq("lama@example.com"), eq("I would like to discuss a full stack role."), any(Instant.class)))
+                .thenReturn(true);
+
+        ResponseStatusException exception = org.junit.jupiter.api.Assertions.assertThrows(
+                ResponseStatusException.class,
+                () -> contactService.submit(contactForm));
+
+        assertThat(exception.getStatusCode().value()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(exception.getReason()).contains("already submitted recently");
+        verify(contactSubmissionRepository, never()).save(any(ContactSubmission.class));
+        verify(emailService, never()).sendContactNotification(any(ContactSubmission.class));
     }
 
     @Test

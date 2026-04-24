@@ -128,6 +128,23 @@ class AdminControllerTest {
         verify(contactService).deleteSubmission(7L);
     }
 
+    @Test
+    void shouldExportFilteredSubmissionsAsCsv() throws Exception {
+        when(contactService.exportSubmissionsAsCsv("lama", ContactSubmissionStatus.ARCHIVED, AdminSubmissionSort.NAME.toSort()))
+                .thenReturn("""
+                        id,name,email,status,created_at,admin_note,message
+                        "1","Lama","lama@example.com","ARCHIVED","","","Message"
+                        """);
+
+        mockMvc.perform(get("/admin/contact-submissions/export")
+                        .param("query", "lama")
+                        .param("status", "ARCHIVED")
+                        .param("sort", "NAME"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/csv"))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("\"ARCHIVED\"")));
+    }
+
     private ViewResolver thymeleafViewResolver() {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("templates/");
