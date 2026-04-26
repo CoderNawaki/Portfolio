@@ -50,7 +50,13 @@
 
 <footer th:fragment="footer" class="site-footer">
     <div class="footer-inner">
-        <p th:text="'&copy; ' + ${currentYear} + ' ' + ${displayName} + '. Full stack developer portfolio.'"></p>
+        <div class="footer-info">
+            <p th:text="'&copy; ' + ${currentYear} + ' ' + ${displayName} + '. Full stack developer portfolio.'"></p>
+            <div class="system-status" id="systemStatus">
+                <span class="status-dot"></span>
+                <span class="status-text">Checking status...</span>
+            </div>
+        </div>
         <div class="footer-links">
             <a th:href="${githubUrl}" target="_blank" rel="noreferrer">GitHub</a>
             <a th:href="'mailto:' + ${email}">Email</a>

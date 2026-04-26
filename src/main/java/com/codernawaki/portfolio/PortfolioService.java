@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 public class PortfolioService {
 
     private final PortfolioProperties properties;
+    private final GithubService githubService;
 
-    public PortfolioService(PortfolioProperties properties) {
+    public PortfolioService(PortfolioProperties properties, GithubService githubService) {
         this.properties = properties;
+        this.githubService = githubService;
     }
 
     public PortfolioProperties getProperties() {
@@ -34,7 +36,8 @@ public class PortfolioService {
                         p.getHighlight(),
                         p.getGithubUrl(),
                         p.getVisibility(),
-                        p.getAccessNote()
+                        p.getAccessNote(),
+                        "Public".equalsIgnoreCase(p.getVisibility()) ? githubService.getRepositoryStats(p.getGithubUrl()) : null
                 ))
                 .collect(Collectors.toList());
     }

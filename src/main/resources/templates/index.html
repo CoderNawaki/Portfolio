@@ -147,6 +147,16 @@
                     <div class="project-topline">
                         <span class="project-visibility" th:text="${project.visibility()}">Public</span>
                         <span class="project-stack" th:text="${project.stack()}">Java, Spring Boot</span>
+                        <div th:if="${project.githubStats() != null}" class="project-github-stats">
+                            <span class="github-stat">
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path></svg>
+                                <span th:text="${project.githubStats().stars()}">0</span>
+                            </span>
+                            <span class="github-stat" th:title="'Last push: ' + ${project.githubStats().lastCommitDate()}">
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7-3.25v2.992l2.028.812a.75.75 0 0 1-.557 1.392l-2.5-1A.751.751 0 0 1 7 8.25v-3.5a.75.75 0 0 1 1.5 0Z"></path></svg>
+                                <span class="last-push-date" th:data-date="${project.githubStats().lastCommitDate()}">Recent</span>
+                            </span>
+                        </div>
                     </div>
                     <p class="project-index" th:text="'0' + ${stat.count}">01</p>
                     <h3 th:text="${project.title()}">Project title</h3>
