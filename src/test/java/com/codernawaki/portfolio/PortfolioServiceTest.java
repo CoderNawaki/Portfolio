@@ -1,14 +1,18 @@
 package com.codernawaki.portfolio;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PortfolioServiceTest {
 
     private PortfolioProperties properties;
+    private GithubService githubService;
     private PortfolioService portfolioService;
 
     @BeforeEach
@@ -21,9 +25,15 @@ class PortfolioServiceTest {
         project.setSlug("project-1");
         project.setTitle("Project 1");
         project.setStack("Java");
+        project.setVisibility("Public");
+        project.setGithubUrl("https://github.com/owner/repo");
         properties.setProjects(List.of(project));
         
-        portfolioService = new PortfolioService(properties);
+        githubService = mock(GithubService.class);
+        when(githubService.getRepositoryStats(anyString()))
+                .thenReturn(new GithubStats(10, "2024-01-01T00:00:00Z", "repo"));
+        
+        portfolioService = new PortfolioService(properties, githubService);
     }
 
     @Test

@@ -5,7 +5,68 @@ document.addEventListener("DOMContentLoaded", () => {
     initScrollToTop();
     initContactForm();
     initRevealAnimations();
+    initSystemStatus();
+    initGithubDates();
 });
+
+function initSystemStatus() {
+    const statusContainer = document.getElementById("systemStatus");
+    if (!statusContainer) return;
+
+    const statusText = statusContainer.querySelector(".status-text");
+
+    async function updateStatus() {
+        try {
+            const response = await fetch("/api/status");
+            const data = await response.json();
+            
+            if (data.status === "UP") {
+                statusContainer.className = "system-status is-up";
+                statusText.textContent = `System online • ${data.uptime} uptime`;
+            } else {
+                statusContainer.className = "system-status is-down";
+                statusText.textContent = "System issues detected";
+            }
+        } catch (error) {
+            statusContainer.className = "system-status";
+            statusText.textContent = "Status unavailable";
+        }
+    }
+
+    updateStatus();
+    setInterval(updateStatus, 60000); // Update every minute
+}
+
+function initGithubDates() {
+    const dateElements = document.querySelectorAll(".last-push-date");
+    dateElements.forEach(el => {
+        const rawDate = el.getAttribute("data-date");
+        if (rawDate) {
+            el.textContent = `Pushed ${formatRelativeTime(new Date(rawDate))}`;
+        }
+    });
+}
+
+function formatRelativeTime(date) {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    
+    if (diffInSeconds < 60) return "just now";
+    
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 30) return `${diffInDays}d ago`;
+    
+    const diffInMonths = Math.floor(diffInDays / 30);
+    if (diffInMonths < 12) return `${diffInMonths}mo ago`;
+    
+    return `${Math.floor(diffInMonths / 12)}y ago`;
+}
 
 function initNavigation() {
     const menuToggle = document.getElementById("menuToggle");

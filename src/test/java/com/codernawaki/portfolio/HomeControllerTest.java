@@ -1,15 +1,18 @@
 package com.codernawaki.portfolio;
 
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.ViewResolver;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -21,6 +24,7 @@ class HomeControllerTest {
 
     private MockMvc mockMvc;
     private PortfolioService portfolioService;
+    private GithubService githubService;
     private PortfolioProperties properties;
 
     @BeforeEach
@@ -52,7 +56,11 @@ class HomeControllerTest {
         project.setAccessNote("Public repository");
         properties.setProjects(List.of(project));
 
-        portfolioService = new PortfolioService(properties);
+        githubService = mock(GithubService.class);
+        when(githubService.getRepositoryStats(anyString()))
+                .thenReturn(new GithubStats(5, "2024-01-01T12:00:00Z", "Portfolio"));
+
+        portfolioService = new PortfolioService(properties, githubService);
 
         mockMvc = MockMvcBuilders.standaloneSetup(new HomeController(portfolioService))
                 .setControllerAdvice(new GlobalModelAttributeAdvice(portfolioService))

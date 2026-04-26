@@ -14,6 +14,7 @@ public record FeaturedProject(
         String highlight,
         String githubUrl,
         String visibility,
-        String accessNote) implements Serializable {
+        String accessNote,
+        GithubStats githubStats) implements Serializable {
     private static final long serialVersionUID = 1L;
 }
