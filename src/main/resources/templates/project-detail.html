@@ -1,6 +1,29 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments :: head}"></head>
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ 
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+    });
+    
+    // Listen for theme changes to update mermaid
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'data-theme') {
+                const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default';
+                mermaid.initialize({ startOnLoad: false, theme });
+                // Force re-render of diagrams
+                document.querySelectorAll('.mermaid').forEach(el => {
+                   el.removeAttribute('data-processed');
+                   mermaid.run({ nodes: [el] });
+                });
+            }
+        });
+    });
+    observer.observe(document.documentElement, { attributes: true });
+</script>
 <body>
 <header th:replace="~{fragments :: header}"></header>
 
@@ -23,6 +46,33 @@
             <p class="panel-title">Why this project matters</p>
             <p th:text="${project.highlight()}">Project highlight</p>
             <p th:text="${project.outcome()}">Outcome summary</p>
+        </div>
+    </section>
+
+    <section class="section architecture-section reveal">
+        <div class="section-heading">
+            <p class="eyebrow">Architecture</p>
+            <h2>Request flow and system design</h2>
+        </div>
+        <div class="diagram-card project-detail-card">
+            <div class="mermaid">
+                sequenceDiagram
+                    participant User
+                    participant Controller
+                    participant Service
+                    participant Repository
+                    participant Database
+
+                    User->>Controller: Request
+                    Controller->>Service: Process Request
+                    Service->>Repository: Query Data
+                    Repository->>Database: SQL
+                    Database-->>Repository: Result Set
+                    Repository-->>Service: Domain Object
+                    Service-->>Controller: DTO
+                    Controller-->>User: View/JSON
+            </div>
+            <p class="diagram-caption">Standard layered request flow implemented in this project.</p>
         </div>
     </section>
 

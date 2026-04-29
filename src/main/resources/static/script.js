@@ -7,7 +7,21 @@ document.addEventListener("DOMContentLoaded", () => {
     initRevealAnimations();
     initSystemStatus();
     initGithubDates();
+    initTheme();
 });
+
+function initTheme() {
+    const themeToggle = document.getElementById("themeToggle");
+    if (!themeToggle) return;
+
+    themeToggle.addEventListener("click", () => {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        
+        document.documentElement.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+    });
+}
 
 function initSystemStatus() {
     const statusContainer = document.getElementById("systemStatus");
