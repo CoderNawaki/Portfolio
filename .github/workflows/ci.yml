@@ -31,4 +31,6 @@ jobs:
       env:
         PORTFOLIO_ADMIN_USERNAME: test-admin
         PORTFOLIO_ADMIN_PASSWORD: test-password
-        # Add other required env vars for tests if any
+        SPRING_MAIL_USERNAME: ""
+        SPRING_MAIL_PASSWORD: ""
+        PORTFOLIO_CONTACT_NOTIFICATION_EMAIL: ""
