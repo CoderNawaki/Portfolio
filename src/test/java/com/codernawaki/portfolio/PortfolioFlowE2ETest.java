@@ -20,6 +20,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
         "SPRING_MAIL_USERNAME=",
         "SPRING_MAIL_PASSWORD=",
         "PORTFOLIO_CONTACT_NOTIFICATION_EMAIL=",
+        "spring.cache.type=simple",
         "PORTFOLIO_SITE_URL=http://127.0.0.1:8081"
 })
 class PortfolioFlowE2ETest {
