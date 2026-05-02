@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: portfolio-postgres
 spec:
+  clusterIP: None
   selector:
     app: portfolio-postgres
   ports:
