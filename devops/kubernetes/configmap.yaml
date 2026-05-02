@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portfolio-config
+data:
+  SPRING_PROFILES_ACTIVE: prod
+  SERVER_PORT: "8081"
+  SPRING_DATASOURCE_URL: jdbc:postgresql://portfolio-postgres:5432/portfolio
+  SPRING_DATA_REDIS_HOST: portfolio-redis
+  SPRING_DATA_REDIS_PORT: "6379"
+  PORTFOLIO_SITE_URL: https://portfolio.example.com
+  MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT: http://tempo:4318/v1/traces

@@ -18,6 +18,8 @@ This project is a recruiter-facing portfolio application built to present Lama N
 - **Security & Resilience**: Redis-backed rate limiting with fallback to in-memory buckets.
 - **Database Evolution**: Flyway-based schema migrations for reproducible database state.
 - **SEO & Share Metadata**: Canonical links, Open Graph/Twitter metadata, robots rules, sitemap, and manifest-backed web metadata.
+- **Browser E2E Coverage**: Selenium-backed browser tests for the contact flow using Selenium Manager for driver resolution.
+- **Deployment Manifests**: Kubernetes manifests under `devops/kubernetes` for the app, PostgreSQL, Redis, ingress, and autoscaling.
 
 ## Tech Stack
 
@@ -87,6 +89,12 @@ portfolio.projects[0].title=New Project
 ./gradlew build
 ```
 
+For browser-level tests, run the standard Gradle test suite. Selenium Manager resolves the browser driver automatically:
+
+```bash
+./gradlew test
+```
+
 ## Recruiter-Facing Pages
 
 - Home page: portfolio overview, skills, and featured projects
@@ -114,6 +122,14 @@ Grafana provisions:
 - `Loki` as the log datasource
 - `Tempo` as the trace datasource
 - `Portfolio Observability` dashboard in the `Portfolio` folder
+
+## DevOps
+
+Kubernetes manifests live under `devops/kubernetes`.
+
+```bash
+kubectl apply -k devops/kubernetes
+```
 
 Tracing:
 
