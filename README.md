@@ -131,6 +131,16 @@ Kubernetes manifests live under `devops/kubernetes`.
 kubectl apply -k devops/kubernetes
 ```
 
+For local cluster testing, use the Minikube overlay:
+
+```bash
+minikube start
+eval "$(minikube docker-env)"
+docker build -t portfolio:minikube .
+kubectl apply -k devops/minikube
+minikube service -n portfolio portfolio-app --url
+```
+
 Tracing:
 
 - The application exports traces via OTLP to Tempo
