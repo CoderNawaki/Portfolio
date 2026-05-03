@@ -15,7 +15,7 @@ spec:
       containers:
         - name: portfolio-app
           image: ghcr.io/codernawaki/portfolio:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8081
               name: http

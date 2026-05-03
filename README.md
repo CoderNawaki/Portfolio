@@ -18,7 +18,7 @@ This project is a recruiter-facing portfolio application built to present Lama N
 - **Security & Resilience**: Redis-backed rate limiting with fallback to in-memory buckets.
 - **Database Evolution**: Flyway-based schema migrations for reproducible database state.
 - **SEO & Share Metadata**: Canonical links, Open Graph/Twitter metadata, robots rules, sitemap, and manifest-backed web metadata.
-- **Browser E2E Coverage**: Selenium-backed browser tests for the contact flow using Selenium Manager for driver resolution.
+- **Browser E2E Coverage**: HTTP-driven end-to-end coverage for the public page and contact submission flow.
 - **Deployment Manifests**: Kubernetes manifests under `devops/kubernetes` for the app, PostgreSQL, Redis, ingress, and autoscaling.
 
 ## Tech Stack
@@ -89,7 +89,7 @@ portfolio.projects[0].title=New Project
 ./gradlew build
 ```
 
-For browser-level tests, run the standard Gradle test suite. Selenium Manager resolves the browser driver automatically:
+For end-to-end coverage, run the standard Gradle test suite:
 
 ```bash
 ./gradlew test
