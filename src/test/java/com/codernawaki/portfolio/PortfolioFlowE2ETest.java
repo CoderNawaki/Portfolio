@@ -2,15 +2,18 @@ package com.codernawaki.portfolio;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
@@ -28,49 +31,51 @@ class PortfolioFlowE2ETest {
     @LocalServerPort
     private int port;
 
-    @Autowired
-    private ContactSubmissionRepository contactSubmissionRepository;
-
-    private HttpClient httpClient;
+    private WebDriver driver;
+    private WebDriverWait wait;
 
     @BeforeEach
     void setUp() {
-        httpClient = HttpClient.newHttpClient();
-        contactSubmissionRepository.deleteAll();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless=new");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--window-size=1440,1800");
+        driver = new ChromeDriver(options);
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
     }
 
     @Test
-    void shouldServeTheHomePageAndAcceptAContactSubmission() throws Exception {
-        HttpResponse<String> homeResponse = httpClient.send(
-                HttpRequest.newBuilder(uri("/"))
-                        .GET()
-                        .build(),
-                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+    void shouldRenderThePortfolioAndSubmitTheContactFormThroughTheBrowser() {
+        driver.get("http://127.0.0.1:" + port + "/");
 
-        assertThat(homeResponse.statusCode()).isEqualTo(200);
-        assertThat(homeResponse.body()).contains("Lama Nawaraj");
-        assertThat(homeResponse.body()).contains("Contact");
-        assertThat(homeResponse.body()).contains("Send message");
+        wait.until(ExpectedConditions.titleContains("Lama Nawaraj"));
+        assertThat(driver.getTitle()).contains("Lama Nawaraj");
 
-        HttpResponse<String> submitResponse = httpClient.send(
-                HttpRequest.newBuilder(uri("/submitContactForm"))
-                        .header("Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString("""
-                                {
-                                  "name": "Aki Tanaka",
-                                  "email": "aki@example.com",
-                                  "message": "I would like to talk about a Java and Spring Boot role."
-                                }
-                                """))
-                        .build(),
-                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        WebElement contactLink = driver.findElement(By.linkText("Contact"));
+        contactLink.click();
 
-        assertThat(submitResponse.statusCode()).isEqualTo(200);
-        assertThat(submitResponse.body()).contains("Thanks, your message has been received");
-        assertThat(contactSubmissionRepository.count()).isEqualTo(1);
-    }
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("contactForm")));
 
-    private URI uri(String path) {
-        return URI.create("http://127.0.0.1:" + port + path);
+        driver.findElement(By.id("name")).sendKeys("Aki Tanaka");
+        driver.findElement(By.id("email")).sendKeys("aki@example.com");
+        driver.findElement(By.id("message")).sendKeys("I would like to talk about a Java and Spring Boot role.");
+        driver.findElement(By.cssSelector("#contactForm button[type='submit']")).click();
+
+        wait.until(ExpectedConditions.textToBe(
+                By.id("formStatus"),
+                "Thanks, your message has been received. I will get back to you soon."));
+
+        assertThat(driver.findElement(By.id("name")).getAttribute("value")).isEmpty();
+        assertThat(driver.findElement(By.id("email")).getAttribute("value")).isEmpty();
+        assertThat(driver.findElement(By.id("message")).getAttribute("value")).isEmpty();
     }
 }
