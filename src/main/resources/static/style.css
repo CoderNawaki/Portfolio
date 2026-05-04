@@ -354,6 +354,11 @@ main { padding: 2rem 0 5rem; }
     padding-top: 1.5rem;
     border-top: 1px solid var(--line);
 }
+.admin-follow-up-actions {
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
 .admin-detail-header,
 .admin-detail-meta,
 .admin-dialog-content {
@@ -448,6 +453,13 @@ main { padding: 2rem 0 5rem; }
 .submission-delete-form {
     display: grid;
     gap: 0.8rem;
+}
+.admin-follow-up-actions .admin-save-button,
+.admin-follow-up-actions .admin-delete-button {
+    min-width: 12.5rem;
+}
+.admin-follow-up-actions .submission-delete-form {
+    align-self: flex-end;
 }
 .admin-delete-button {
     color: var(--error);
@@ -546,6 +558,15 @@ main { padding: 2rem 0 5rem; }
     .project-detail-hero,
     .project-detail-grid {
         grid-template-columns: 1fr;
+    }
+    .admin-follow-up-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .admin-follow-up-actions .admin-save-button,
+    .admin-follow-up-actions .admin-delete-button {
+        min-width: 0;
+        width: 100%;
     }
 }
 
