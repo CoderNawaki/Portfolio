@@ -552,6 +552,12 @@ main { padding: 2rem 0 5rem; }
 /* Footers */
 .site-footer { margin-top: 2rem; padding: 2rem 0; border-top: 1px solid var(--line); }
 .footer-inner { display: flex; justify-content: space-between; align-items: center; }
+.footer-links {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding-right: 5.5rem;
+}
 
 #scrollToTopBtn {
     position: fixed;
@@ -588,6 +594,8 @@ main { padding: 2rem 0 5rem; }
 @media (max-width: 760px) {
     .project-topline { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
     .project-github-stats { margin-left: 0; }
+    .footer-inner { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .footer-links { padding-right: 0; }
 }
 
 /* Theme Toggle */
