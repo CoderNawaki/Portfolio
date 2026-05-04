@@ -141,6 +141,7 @@
                 <div class="admin-detail-panel">
                     <h4>Admin follow-up</h4>
                     <form class="submission-update-form"
+                          th:id="'submission-update-form-' + ${selectedSubmission.id}"
                           th:action="@{/admin/contact-submissions/{submissionId}(submissionId=${selectedSubmission.id})}"
                           method="post">
                         <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -166,26 +167,30 @@
                                       placeholder="Add recruiter follow-up details..."
                                       th:text="${selectedSubmission.adminNote}"></textarea>
                         </label>
-                        <div class="admin-form-actions">
-                            <button class="button button-primary admin-save-button" type="submit">Save changes</button>
-                        </div>
                     </form>
-
-                    <form class="submission-delete-form"
-                          th:id="'delete-submission-' + ${selectedSubmission.id}"
-                          th:action="@{/admin/contact-submissions/{submissionId}/delete(submissionId=${selectedSubmission.id})}"
-                          method="post">
-                        <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <input type="hidden" name="query" th:value="${currentQuery}">
-                        <input type="hidden" name="filterStatus" th:value="${currentStatus}">
-                        <input type="hidden" name="sort" th:value="${currentSort}">
-                        <input type="hidden" name="page" th:value="${submissionsPage.number}">
-                        <button class="button button-secondary admin-delete-button"
-                                type="button"
-                                th:attr="data-delete-form=${'delete-submission-' + selectedSubmission.id}">
-                            Delete submission
+                    <div class="admin-form-actions admin-follow-up-actions">
+                        <button class="button button-primary admin-save-button"
+                                type="submit"
+                                th:form="'submission-update-form-' + ${selectedSubmission.id}">
+                            Save changes
                         </button>
-                    </form>
+
+                        <form class="submission-delete-form"
+                              th:id="'delete-submission-' + ${selectedSubmission.id}"
+                              th:action="@{/admin/contact-submissions/{submissionId}/delete(submissionId=${selectedSubmission.id})}"
+                              method="post">
+                            <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <input type="hidden" name="query" th:value="${currentQuery}">
+                            <input type="hidden" name="filterStatus" th:value="${currentStatus}">
+                            <input type="hidden" name="sort" th:value="${currentSort}">
+                            <input type="hidden" name="page" th:value="${submissionsPage.number}">
+                            <button class="button button-secondary admin-delete-button"
+                                    type="button"
+                                    th:attr="data-delete-form=${'delete-submission-' + selectedSubmission.id}">
+                                Delete submission
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </section>
