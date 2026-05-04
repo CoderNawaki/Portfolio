@@ -12,6 +12,14 @@
     --accent-soft: #eabf8f;
     --error: #b12626;
     --success: #23653a;
+    --button-secondary-bg: rgba(255, 255, 255, 0.58);
+    --button-secondary-bg-hover: rgba(255, 255, 255, 0.78);
+    --button-secondary-color: var(--ink);
+    --button-secondary-border: var(--line);
+    --utility-button-bg: var(--ink);
+    --utility-button-bg-hover: #12161d;
+    --utility-button-color: #fff;
+    --utility-button-border: transparent;
     
     /* Layout */
     --content-width: 1180px;
@@ -34,6 +42,14 @@
     --accent-dark: #f0a282;
     --accent-soft: #603020;
     --shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+    --button-secondary-bg: rgba(30, 38, 48, 0.9);
+    --button-secondary-bg-hover: rgba(45, 54, 67, 0.98);
+    --button-secondary-color: var(--ink);
+    --button-secondary-border: rgba(148, 163, 184, 0.26);
+    --utility-button-bg: rgba(45, 54, 67, 0.96);
+    --utility-button-bg-hover: rgba(65, 77, 94, 1);
+    --utility-button-color: var(--ink);
+    --utility-button-border: rgba(148, 163, 184, 0.22);
 }
 
 /* Base */
@@ -155,8 +171,12 @@ main { padding: 2rem 0 5rem; }
 .button-primary { background: var(--accent); color: #fff7ef; }
 .button-primary:hover { background: var(--accent-dark); }
 .button-secondary {
-    border-color: var(--line);
-    background: rgba(255, 255, 255, 0.58);
+    border-color: var(--button-secondary-border);
+    background: var(--button-secondary-bg);
+    color: var(--button-secondary-color);
+}
+.button-secondary:hover {
+    background: var(--button-secondary-bg-hover);
 }
 
 /* Hero */
@@ -250,7 +270,7 @@ main { padding: 2rem 0 5rem; }
         flex-direction: column;
         width: min(18rem, 100%);
         padding: 1rem;
-        background: rgba(255, 248, 239, 0.96);
+        background: var(--surface);
         border: 1px solid var(--line);
         border-radius: 24px;
     }
@@ -539,10 +559,18 @@ main { padding: 2rem 0 5rem; }
     display: none;
     padding: 0.8rem 1rem;
     border-radius: 999px;
-    background: var(--ink);
-    color: #fff;
-    border: none;
+    background: var(--utility-button-bg);
+    color: var(--utility-button-color);
+    border: 1px solid var(--utility-button-border);
     cursor: pointer;
+    box-shadow: 0 10px 24px rgba(15, 20, 26, 0.2);
+    transition: transform 0.2s, background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+#scrollToTopBtn:hover {
+    transform: translateY(-1px);
+    background: var(--utility-button-bg-hover);
+    box-shadow: 0 12px 26px rgba(15, 20, 26, 0.26);
 }
 
 /* GitHub & Status Phase 1 */
