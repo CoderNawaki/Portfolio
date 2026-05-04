@@ -141,6 +141,21 @@ kubectl apply -k devops/minikube
 minikube service -n portfolio portfolio-app --url
 ```
 
+If you use Docker Desktop Kubernetes instead, use the Docker Desktop overlay:
+
+```bash
+docker build -t portfolio:docker-desktop .
+kubectl apply -k devops/docker-desktop
+kubectl -n portfolio get pods
+kubectl -n portfolio get svc portfolio-app
+```
+
+Open the app at `http://localhost:30081`, or use port-forwarding if your setup does not expose NodePorts on localhost:
+
+```bash
+kubectl -n portfolio port-forward svc/portfolio-app 8081:80
+```
+
 Tracing:
 
 - The application exports traces via OTLP to Tempo
