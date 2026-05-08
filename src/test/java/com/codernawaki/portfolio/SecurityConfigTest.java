@@ -131,22 +131,27 @@ class SecurityConfigTest {
     }
 
     @Test
+    void shouldAllowPublicAccessToActuatorHealthReadiness() throws Exception {
+        mockMvc.perform(get("/actuator/health/readiness"))
+                .andExpect(status().is(org.hamcrest.Matchers.oneOf(200, 503)));
+    }
+
+    @Test
     void shouldAllowPublicAccessToActuatorInfo() throws Exception {
         mockMvc.perform(get("/actuator/info"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void shouldRestrictAccessToActuatorPrometheus() throws Exception {
+    void shouldAllowPublicAccessToActuatorPrometheus() throws Exception {
         mockMvc.perform(get("/actuator/prometheus"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/login"));
+                .andExpect(status().isOk());
     }
 
     @Test
-    void shouldAllowAdminAccessToActuatorPrometheus() throws Exception {
-        mockMvc.perform(get("/actuator/prometheus")
-                        .with(user("admin").roles("ADMIN")))
-                .andExpect(status().isOk());
+    void shouldRestrictAccessToActuatorMetrics() throws Exception {
+        mockMvc.perform(get("/actuator/metrics"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"));
     }
 }
