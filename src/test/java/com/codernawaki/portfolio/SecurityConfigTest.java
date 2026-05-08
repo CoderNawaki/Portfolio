@@ -123,4 +123,30 @@ class SecurityConfigTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login?logout"));
     }
+
+    @Test
+    void shouldAllowPublicAccessToActuatorHealth() throws Exception {
+        mockMvc.perform(get("/actuator/health"))
+                .andExpect(status().is(org.hamcrest.Matchers.oneOf(200, 503)));
+    }
+
+    @Test
+    void shouldAllowPublicAccessToActuatorInfo() throws Exception {
+        mockMvc.perform(get("/actuator/info"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldRestrictAccessToActuatorPrometheus() throws Exception {
+        mockMvc.perform(get("/actuator/prometheus"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"));
+    }
+
+    @Test
+    void shouldAllowAdminAccessToActuatorPrometheus() throws Exception {
+        mockMvc.perform(get("/actuator/prometheus")
+                        .with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk());
+    }
 }
