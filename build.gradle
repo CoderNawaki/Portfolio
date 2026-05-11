@@ -17,6 +17,14 @@ configurations {
 	}
 }
 
+configurations.all {
+	resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+		if (details.requested.group == 'io.netty') {
+			details.useVersion '4.2.13.Final'
+		}
+	}
+}
+
 repositories {
 	mavenCentral()
 }
