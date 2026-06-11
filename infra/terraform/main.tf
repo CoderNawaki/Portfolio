@@ -9,12 +9,13 @@ resource "null_resource" "deploy" {
   }
 
   provisioner "local-exec" {
-    # pull images then start compose in repo root
-    command = "docker compose -f \"${path.module}/../../docker-compose.yml\" pull && docker compose -f \"${path.module}/../../docker-compose.yml\" up -d"
+    working_dir = "${path.module}/../.."
+    command     = "docker compose pull && docker compose up -d"
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
-    command = "docker compose -f \"${path.module}/../../docker-compose.yml\" down"
+    when        = destroy
+    working_dir = "${path.module}/../.."
+    command     = "docker compose down"
   }
 }
