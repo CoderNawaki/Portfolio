@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head}"></head>
+<body class="admin-body">
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="admin-shell">
+    <section class="admin-header-card">
+        <div class="admin-header-topline">
+            <div>
+                <p class="eyebrow">Admin</p>
+                <h1>Manage articles</h1>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="button button-secondary admin-logout-button" type="submit">Log out</button>
+            </form>
+        </div>
+        <p class="admin-summary">
+            Create, edit, and publish blog articles.
+        </p>
+    </section>
+
+    <p th:if="${adminMessage}" class="admin-flash-message" th:text="${adminMessage}">Article updated.</p>
+
+    <section class="admin-table-card">
+        <div class="admin-table-header">
+            <h2>Articles</h2>
+            <p th:text="${articlesPage.totalElements} + ' article(s)'">0 article(s)</p>
+        </div>
+
+        <div th:if="${#lists.isEmpty(articles)}" class="admin-empty-state">
+            No articles yet. Use the form below to create one.
+        </div>
+
+        <div th:unless="${#lists.isEmpty(articles)}" class="admin-table-wrap">
+            <table class="submission-table">
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Updated</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="article : ${articles}"
+                    th:classappend="${selectedArticle != null and selectedArticle.id == article.id} ? ' submission-row-selected'">
+                    <td th:text="${article.title}">Article title</td>
+                    <td>
+                        <span class="status-pill"
+                              th:classappend="${article.status == T(com.codernawaki.portfolio.ArticleStatus).PUBLISHED} ? ' status-pill-published' : ' status-pill-draft'"
+                              th:text="${article.status}">DRAFT</span>
+                    </td>
+                    <td th:text="${#temporals.format(article.updatedAt, 'yyyy-MM-dd HH:mm')}">2026-06-13 12:00</td>
+                    <td class="action-cell">
+                        <a class="button button-secondary"
+                           th:href="@{/admin/articles(selected=${article.id})}">
+                            Edit
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav th:if="${articlesPage.totalPages > 1}" class="admin-pagination" aria-label="Article pages">
+            <a class="button button-secondary"
+               th:classappend="${articlesPage.first} ? ' is-disabled'"
+               th:href="${articlesPage.first} ? '#' : @{/admin/articles(page=${articlesPage.number - 1}, selected=${selectedArticle != null ? selectedArticle.id : null})}">Previous</a>
+            <div class="admin-page-links">
+                <a th:each="pageNumber : ${#numbers.sequence(0, articlesPage.totalPages - 1)}"
+                   class="admin-page-link"
+                   th:classappend="${pageNumber == articlesPage.number} ? ' is-active'"
+                   th:href="@{/admin/articles(page=${pageNumber}, selected=${selectedArticle != null ? selectedArticle.id : null})}"
+                   th:text="${pageNumber + 1}">1</a>
+            </div>
+            <a class="button button-secondary"
+               th:classappend="${articlesPage.last} ? ' is-disabled'"
+               th:href="${articlesPage.last} ? '#' : @{/admin/articles(page=${articlesPage.number + 1}, selected=${selectedArticle != null ? selectedArticle.id : null})}">Next</a>
+        </nav>
+    </section>
+
+    <section class="admin-detail-card">
+        <div class="admin-detail-header">
+            <p class="eyebrow" th:text="${selectedArticle != null ? 'Edit article' : 'New article'}">New article</p>
+            <h3 th:text="${selectedArticle != null ? selectedArticle.title : 'Create article'}">Create article</h3>
+        </div>
+
+        <form th:action="${selectedArticle != null} ? @{/admin/articles/{articleId}(articleId=${selectedArticle.id})} : @{/admin/articles}"
+              th:object="${articleForm}"
+              method="post"
+              class="article-form">
+            <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+            <div class="admin-detail-grid">
+                <div class="admin-detail-panel">
+                    <label>
+                        <span>Title</span>
+                        <input type="text" th:field="*{title}" placeholder="Article title" required>
+                        <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="field-error">Error</p>
+                    </label>
+                    <label>
+                        <span>Slug (optional — auto-generated from title if blank)</span>
+                        <input type="text" th:field="*{slug}" placeholder="article-url-slug">
+                    </label>
+                    <label>
+                        <span>Excerpt</span>
+                        <textarea th:field="*{excerpt}" rows="3" placeholder="Brief summary for list pages"></textarea>
+                    </label>
+                    <label>
+                        <span>Tags (comma-separated)</span>
+                        <input type="text" th:field="*{tags}" placeholder="java, spring, case-study">
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" th:field="*{publish}">
+                        <span>Publish immediately</span>
+                    </label>
+                </div>
+
+                <div class="admin-detail-panel">
+                    <label>
+                        <span>Content (Markdown)</span>
+                        <textarea th:field="*{content}" rows="20" placeholder="Write your article content in Markdown..." required></textarea>
+                        <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="field-error">Error</p>
+                    </label>
+                </div>
+            </div>
+
+            <div class="admin-form-actions">
+                <button class="button button-primary" type="submit" th:text="${selectedArticle != null} ? 'Update article' : 'Create article'">Save</button>
+                <a class="button button-secondary" th:href="@{/admin/articles}">Cancel</a>
+            </div>
+        </form>
+
+        <div th:if="${selectedArticle != null}" class="admin-form-actions admin-follow-up-actions">
+            <form th:id="'delete-article-' + ${selectedArticle.id}"
+                  th:action="@{/admin/articles/{articleId}/delete(articleId=${selectedArticle.id})}"
+                  method="post"
+                  class="inline">
+                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="button button-secondary admin-delete-button"
+                        type="button"
+                        th:attr="data-delete-form=${'delete-article-' + selectedArticle.id}">
+                    Delete article
+                </button>
+            </form>
+        </div>
+    </section>
+</main>
+
+<dialog id="delete-confirm-dialog" class="admin-dialog">
+    <form method="dialog" class="admin-dialog-content">
+        <h3>Delete article?</h3>
+        <p>This action cannot be undone.</p>
+        <div class="admin-form-actions">
+            <button class="button button-secondary" type="submit">Cancel</button>
+            <button class="button button-primary admin-delete-confirm" type="button">Delete</button>
+        </div>
+    </form>
+</dialog>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<script>
+    (() => {
+        const dialog = document.getElementById('delete-confirm-dialog');
+        const confirmButton = document.querySelector('.admin-delete-confirm');
+        let formId = null;
+
+        document.querySelectorAll('[data-delete-form]').forEach((button) => {
+            button.addEventListener('click', () => {
+                formId = button.dataset.deleteForm;
+                if (dialog && typeof dialog.showModal === 'function') {
+                    dialog.showModal();
+                    return;
+                }
+                const form = document.getElementById(formId);
+                if (form && window.confirm('Delete this article?')) {
+                    form.submit();
+                }
+            });
+        });
+
+        if (confirmButton) {
+            confirmButton.addEventListener('click', () => {
+                const form = formId ? document.getElementById(formId) : null;
+                if (dialog) {
+                    dialog.close();
+                }
+                if (form) {
+                    form.submit();
+                }
+            });
+        }
+    })();
+</script>
+</body>
+</html>
