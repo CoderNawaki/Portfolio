@@ -21,7 +21,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/submitContactForm"))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/style.css", "/script.js", "/image.png", "/robots.txt").permitAll()
-                        .requestMatchers("/", "/login", "/submitContactForm").permitAll()
+                        .requestMatchers("/", "/login", "/submitContactForm", "/blog/**").permitAll()
                         .requestMatchers("/actuator/health/**", "/actuator/info", "/actuator/prometheus").permitAll()
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()

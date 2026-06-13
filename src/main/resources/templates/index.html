@@ -87,6 +87,25 @@
         </div>
     </section>
 
+    <section class="section reveal" th:if="${not #lists.isEmpty(latestPosts)}" id="latest-posts">
+        <div class="section-heading">
+            <p class="eyebrow">Latest Posts</p>
+            <h2>Recent articles and case studies</h2>
+        </div>
+        <div class="latest-posts-grid">
+            <article class="latest-post-card" th:each="post : ${latestPosts}">
+                <h3>
+                    <a th:href="@{/blog/{slug}(slug=${post.slug})}" th:text="${post.title}">Post title</a>
+                </h3>
+                <p th:text="${post.excerpt}">Excerpt</p>
+                <time th:datetime="${post.publishedAt}" th:text="${#temporals.format(post.publishedAt, 'MMM d, yyyy')}">Date</time>
+            </article>
+        </div>
+        <div class="section-footer-link">
+            <a th:href="@{/blog}">View all articles &rarr;</a>
+        </div>
+    </section>
+
     <section class="section reveal" id="skills">
         <div class="section-heading">
             <p class="eyebrow">Skills</p>

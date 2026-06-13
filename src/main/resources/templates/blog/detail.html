@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<main>
+    <section class="section blog-detail-section">
+        <nav class="breadcrumb">
+            <a th:href="@{/blog}">Blog</a>
+            <span th:text="' / ' + ${article.title}">Article title</span>
+        </nav>
+
+        <article class="blog-article">
+            <header class="blog-article-header">
+                <h1 th:text="${article.title}">Article title</h1>
+                <div class="blog-article-meta">
+                    <time th:datetime="${article.publishedAt}" th:text="${#temporals.format(article.publishedAt, 'MMM d, yyyy')}">Date</time>
+                    <span th:if="${article.tags != null and !article.tags.isEmpty()}">
+                        <span class="blog-tag" th:each="tag : ${#strings.listSplit(article.tags, ',')}" th:text="${#strings.trim(tag)}">tag</span>
+                    </span>
+                </div>
+            </header>
+
+            <div class="blog-article-content" th:utext="${htmlContent}">
+                Rendered HTML content
+            </div>
+        </article>
+
+        <div class="blog-back-link">
+            <a th:href="@{/blog}">&larr; Back to Blog</a>
+        </div>
+    </section>
+</main>
+
+<button id="scrollToTopBtn" type="button" aria-label="Scroll to top">Top</button>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+
+<script th:src="@{/script.js}"></script>
+</body>
+</html>
