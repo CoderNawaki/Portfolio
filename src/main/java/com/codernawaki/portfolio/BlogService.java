@@ -1,6 +1,7 @@
 package com.codernawaki.portfolio;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -38,6 +39,11 @@ public class BlogService {
                 pageable.getPageSize(),
                 PUBLISHED_SORT);
         return articleRepository.findByStatus(ArticleStatus.PUBLISHED, sorted);
+    }
+
+    public List<Article> getLatestPublishedArticles(int count) {
+        Pageable limit = PageRequest.of(0, count, PUBLISHED_SORT);
+        return articleRepository.findByStatus(ArticleStatus.PUBLISHED, limit).getContent();
     }
 
     public Page<Article> getAllArticles(Pageable pageable) {

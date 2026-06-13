@@ -1,5 +1,7 @@
 package com.codernawaki.portfolio;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -12,9 +14,11 @@ import org.springframework.http.HttpStatus;
 public class HomeController {
 
     private final PortfolioService portfolioService;
+    private final BlogService blogService;
 
-    public HomeController(PortfolioService portfolioService) {
+    public HomeController(PortfolioService portfolioService, BlogService blogService) {
         this.portfolioService = portfolioService;
+        this.blogService = blogService;
     }
 
     @GetMapping("/")
@@ -29,6 +33,8 @@ public class HomeController {
         model.addAttribute("proofPoints", props.getProofPoints());
         model.addAttribute("bio", props.getBio());
         model.addAttribute("projects", portfolioService.getFeaturedProjects());
+        List<Article> latestPosts = blogService.getLatestPublishedArticles(3);
+        model.addAttribute("latestPosts", latestPosts);
         model.addAttribute("pageTitle", props.getDisplayName() + " | Full Stack Developer Portfolio");
         model.addAttribute("pageDescription",
                 "Portfolio of Lama Nawaraj, a Java-first full stack developer in Japan covering Spring Boot, frontend delivery, testing, and recruiter-ready project case studies.");
@@ -69,6 +75,10 @@ public class HomeController {
         xml.append("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
         appendSitemapUrl(xml, baseUrl + "/");
         appendSitemapUrl(xml, baseUrl + "/login");
+        appendSitemapUrl(xml, baseUrl + "/blog");
+        for (Article article : blogService.getLatestPublishedArticles(50)) {
+            appendSitemapUrl(xml, baseUrl + "/blog/" + article.getSlug());
+        }
         for (FeaturedProject project : portfolioService.getFeaturedProjects()) {
             appendSitemapUrl(xml, baseUrl + "/projects/" + project.slug());
         }

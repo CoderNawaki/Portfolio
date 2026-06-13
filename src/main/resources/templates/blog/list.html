@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<main>
+    <section class="section blog-list-section">
+        <div class="section-heading">
+            <p class="eyebrow">Blog</p>
+            <h1>Articles and case studies</h1>
+        </div>
+
+        <div class="blog-toolbar">
+            <span class="blog-count" th:text="${articlesPage.totalElements} + ' article' + (${articlesPage.totalElements} == 1 ? '' : 's')">0 articles</span>
+        </div>
+
+        <div th:if="${#lists.isEmpty(articles)}" class="blog-empty">
+            <p>No articles published yet.</p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(articles)}" class="blog-list">
+            <article class="blog-card" th:each="article : ${articles}">
+                <h2 class="blog-card-title">
+                    <a th:href="@{/blog/{slug}(slug=${article.slug})}" th:text="${article.title}">Article title</a>
+                </h2>
+                <p class="blog-card-excerpt" th:text="${article.excerpt}">Excerpt</p>
+                <div class="blog-card-meta">
+                    <time th:datetime="${article.publishedAt}" th:text="${#temporals.format(article.publishedAt, 'MMM d, yyyy')}">Date</time>
+                    <span th:if="${article.tags != null and !article.tags.isEmpty()}" class="blog-card-tags">
+                        <span class="blog-tag" th:each="tag : ${#strings.listSplit(article.tags, ',')}" th:text="${#strings.trim(tag)}">tag</span>
+                    </span>
+                </div>
+            </article>
+        </div>
+
+        <div th:if="${articlesPage.totalPages > 1}" class="blog-pagination">
+            <span th:if="${articlesPage.hasPrevious()}">
+                <a th:href="@{/blog(page=${articlesPage.number - 1})}" class="pagination-link">&laquo; Previous</a>
+            </span>
+            <span class="pagination-info" th:text="'Page ' + (${articlesPage.number} + 1) + ' of ' + ${articlesPage.totalPages}">Page 1 of 1</span>
+            <span th:if="${articlesPage.hasNext()}">
+                <a th:href="@{/blog(page=${articlesPage.number + 1})}" class="pagination-link">Next &raquo;</a>
+            </span>
+        </div>
+    </section>
+</main>
+
+<button id="scrollToTopBtn" type="button" aria-label="Scroll to top">Top</button>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+
+<script th:src="@{/script.js}"></script>
+</body>
+</html>
