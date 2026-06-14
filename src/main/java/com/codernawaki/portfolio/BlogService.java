@@ -34,11 +34,24 @@ public class BlogService {
     }
 
     public Page<Article> getPublishedArticles(Pageable pageable) {
+        return getPublishedArticles(pageable, null);
+    }
+
+    public Page<Article> getPublishedArticles(Pageable pageable, String tag) {
         Pageable sorted = PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 PUBLISHED_SORT);
+        if (tag != null && !tag.isBlank()) {
+            String searchPattern = "%" + tag.trim().toLowerCase() + "%";
+            return articleRepository.findByStatusAndTag(ArticleStatus.PUBLISHED, searchPattern, sorted);
+        }
         return articleRepository.findByStatus(ArticleStatus.PUBLISHED, sorted);
+    }
+
+    public List<Article> getAllPublishedArticles() {
+        Pageable all = PageRequest.of(0, 100, PUBLISHED_SORT);
+        return articleRepository.findByStatus(ArticleStatus.PUBLISHED, all).getContent();
     }
 
     public List<Article> getLatestPublishedArticles(int count) {
