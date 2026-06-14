@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,7 @@ class HomeControllerTest {
     private MockMvc mockMvc;
     private PortfolioService portfolioService;
     private GithubService githubService;
+    private BlogService blogService;
     private PortfolioProperties properties;
 
     @BeforeEach
@@ -61,8 +63,10 @@ class HomeControllerTest {
                 .thenReturn(new GithubStats(5, "2024-01-01T12:00:00Z", "Portfolio"));
 
         portfolioService = new PortfolioService(properties, githubService);
+        blogService = mock(BlogService.class);
+        when(blogService.getLatestPublishedArticles(anyInt())).thenReturn(List.of());
 
-        mockMvc = MockMvcBuilders.standaloneSetup(new HomeController(portfolioService))
+        mockMvc = MockMvcBuilders.standaloneSetup(new HomeController(portfolioService, blogService))
                 .setControllerAdvice(new GlobalModelAttributeAdvice(portfolioService))
                 .setViewResolvers(thymeleafViewResolver())
                 .build();
