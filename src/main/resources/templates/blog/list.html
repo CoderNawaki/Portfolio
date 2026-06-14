@@ -13,6 +13,15 @@
 
         <div class="blog-toolbar">
             <span class="blog-count" th:text="${articlesPage.totalElements} + ' article' + (${articlesPage.totalElements} == 1 ? '' : 's')">0 articles</span>
+            <form class="blog-tag-filter" method="get" th:action="@{/blog}">
+                <input type="search" name="tag" th:value="${currentTag}" placeholder="Filter by tag..." class="blog-tag-input">
+                <button type="submit" class="blog-tag-submit">Filter</button>
+                <a th:if="${currentTag != null}" th:href="@{/blog}" class="blog-tag-clear">Clear</a>
+            </form>
+        </div>
+
+        <div th:if="${currentTag != null}" class="blog-active-filter">
+            Filtering by tag: <strong th:text="${currentTag}">tag</strong>
         </div>
 
         <div th:if="${#lists.isEmpty(articles)}" class="blog-empty">
@@ -28,7 +37,7 @@
                 <div class="blog-card-meta">
                     <time th:datetime="${article.publishedAt}" th:text="${#temporals.format(article.publishedAt, 'MMM d, yyyy')}">Date</time>
                     <span th:if="${article.tags != null and !article.tags.isEmpty()}" class="blog-card-tags">
-                        <span class="blog-tag" th:each="tag : ${#strings.listSplit(article.tags, ',')}" th:text="${#strings.trim(tag)}">tag</span>
+                        <a class="blog-tag" th:each="tag : ${#strings.listSplit(article.tags, ',')}" th:href="@{/blog(tag=${#strings.trim(tag)})}" th:text="${#strings.trim(tag)}">tag</a>
                     </span>
                 </div>
             </article>
@@ -36,11 +45,11 @@
 
         <div th:if="${articlesPage.totalPages > 1}" class="blog-pagination">
             <span th:if="${articlesPage.hasPrevious()}">
-                <a th:href="@{/blog(page=${articlesPage.number - 1})}" class="pagination-link">&laquo; Previous</a>
+                <a th:href="@{/blog(page=${articlesPage.number - 1}, tag=${currentTag})}" class="pagination-link">&laquo; Previous</a>
             </span>
             <span class="pagination-info" th:text="'Page ' + (${articlesPage.number} + 1) + ' of ' + ${articlesPage.totalPages}">Page 1 of 1</span>
             <span th:if="${articlesPage.hasNext()}">
-                <a th:href="@{/blog(page=${articlesPage.number + 1})}" class="pagination-link">Next &raquo;</a>
+                <a th:href="@{/blog(page=${articlesPage.number + 1}, tag=${currentTag})}" class="pagination-link">Next &raquo;</a>
             </span>
         </div>
     </section>
