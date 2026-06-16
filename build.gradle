@@ -20,7 +20,7 @@ configurations {
 configurations.all {
 	resolutionStrategy.eachDependency { DependencyResolveDetails details ->
 		if (details.requested.group == 'io.netty') {
-			details.useVersion '4.2.13.Final'
+			details.useVersion '4.2.15.Final'
 		}
 		if (details.requested.group == 'io.opentelemetry') {
 			details.useVersion '1.62.0'
