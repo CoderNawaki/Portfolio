@@ -22,6 +22,9 @@ configurations.all {
 		if (details.requested.group == 'io.netty') {
 			details.useVersion '4.2.13.Final'
 		}
+		if (details.requested.group == 'io.opentelemetry') {
+			details.useVersion '1.62.0'
+		}
 	}
 }
 
