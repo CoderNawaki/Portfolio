@@ -31,10 +31,12 @@ class AdminBlogControllerTest {
 
     private MockMvc mockMvc;
     private BlogService blogService;
+    private ArticleEngagementService engagementService;
 
     @BeforeEach
     void setUp() {
         blogService = mock(BlogService.class);
+        engagementService = mock(ArticleEngagementService.class);
 
         Article article = new Article();
         article.setId(1L);
@@ -49,7 +51,7 @@ class AdminBlogControllerTest {
         when(blogService.getAllArticles(any(PageRequest.class))).thenReturn(articlePage);
         when(blogService.findById(1L)).thenReturn(Optional.of(article));
 
-        mockMvc = MockMvcBuilders.standaloneSetup(new AdminBlogController(blogService))
+        mockMvc = MockMvcBuilders.standaloneSetup(new AdminBlogController(blogService, engagementService))
                 .setViewResolvers(thymeleafViewResolver())
                 .build();
     }
@@ -100,6 +102,25 @@ class AdminBlogControllerTest {
                 .andExpect(redirectedUrl("/admin/articles"));
 
         verify(blogService).deleteArticle(1L);
+    }
+
+    @Test
+    void shouldRenderCommentsPage() throws Exception {
+        when(engagementService.getAllCommentsForAdmin()).thenReturn(List.of());
+
+        mockMvc.perform(get("/admin/comments"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin/comments"))
+                .andExpect(model().attributeExists("comments"));
+    }
+
+    @Test
+    void shouldDeleteComment() throws Exception {
+        mockMvc.perform(post("/admin/comments/1/delete"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/comments"));
+
+        verify(engagementService).deleteComment(1L);
     }
 
     private ViewResolver thymeleafViewResolver() {

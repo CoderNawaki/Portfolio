@@ -700,6 +700,145 @@ main { padding: 2rem 0 5rem; }
 .blog-article-content pre code { background: transparent; padding: 0; }
 .blog-article-content img { max-width: 100%; border-radius: var(--radius-md); }
 .blog-article-content blockquote { border-left: 3px solid var(--accent); margin: 1rem 0; padding: 0.5rem 1rem; background: var(--surface); border-radius: 0 var(--radius-md) var(--radius-md) 0; color: var(--muted); }
+/* Engagement Bar */
+.engagement-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 2rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+.engagement-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.engagement-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+.engagement-btn.is-liked {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(184, 80, 46, 0.08);
+}
+.like-icon { flex-shrink: 0; }
+.like-count { font-weight: 700; }
+.like-label { font-size: 0.85rem; }
+.share-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+.share-label {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 600;
+}
+.share-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.share-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(184, 80, 46, 0.08);
+}
+
+/* Comments Section */
+.comments-section { margin: 2rem 0; }
+.comments-heading { margin-bottom: 1.5rem; font-size: 1.3rem; }
+.comment { margin: 0.5rem 0; }
+.comment-body {
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+}
+.comment-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+.comment-author { color: var(--ink); }
+.comment-time { color: var(--muted); font-size: 0.8rem; }
+.comment-content { color: var(--ink); line-height: 1.6; margin-bottom: 0.5rem; }
+.comment-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+}
+.comment-actions .engagement-btn {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.82rem;
+}
+.reply-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0;
+}
+.reply-toggle-btn:hover { color: var(--accent); }
+.comment-replies {
+    margin-left: 1.5rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--line);
+}
+.comment-form { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.75rem; }
+.comment-author-input, .comment-content-input {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--bg);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+.comment-content-input { min-height: 4rem; resize: vertical; }
+.comment-form-actions { display: flex; gap: 0.5rem; align-items: center; }
+.comment-form-actions .button { min-height: 2.4rem; padding: 0.4rem 1rem; font-size: 0.85rem; }
+.comment-empty { padding: 2rem; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: var(--radius-md); }
+.add-comment { margin-top: 2rem; }
+.add-comment h3 { margin-bottom: 1rem; font-size: 1.1rem; }
+.comment-badge-reply {
+    display: inline-block;
+    margin-left: 0.4rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent-dark);
+}
+
 .blog-back-link { margin-top: 3rem; }
 .blog-back-link a { color: var(--accent); text-decoration: none; font-weight: 600; }
 .blog-back-link a:hover { text-decoration: underline; }

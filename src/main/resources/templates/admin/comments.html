@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head}"></head>
+<body class="admin-body">
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="admin-shell">
+    <section class="admin-header-card">
+        <div class="admin-header-topline">
+            <div>
+                <p class="eyebrow">Admin</p>
+                <h1>Manage comments</h1>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="button button-secondary admin-logout-button" type="submit">Log out</button>
+            </form>
+        </div>
+        <p class="admin-summary">
+            View and delete blog comments.
+        </p>
+    </section>
+
+    <p th:if="${adminMessage}" class="admin-flash-message" th:text="${adminMessage}">Comment deleted.</p>
+
+    <section class="admin-table-card">
+        <div class="admin-table-header">
+            <h2>Comments</h2>
+            <p th:text="${#lists.size(comments)} + ' comment(s)'">0 comment(s)</p>
+        </div>
+
+        <div th:if="${#lists.isEmpty(comments)}" class="admin-empty-state">
+            No comments yet.
+        </div>
+
+        <div th:unless="${#lists.isEmpty(comments)}" class="admin-table-wrap">
+            <table class="submission-table">
+                <thead>
+                <tr>
+                    <th>Author</th>
+                    <th>Comment</th>
+                    <th>Article</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="comment : ${comments}">
+                    <td>
+                        <strong th:text="${comment.author}">Author</strong>
+                        <span th:if="${comment.parentId != null}" class="comment-badge-reply">Reply</span>
+                    </td>
+                    <td class="message-cell" th:text="${comment.content}">Comment text</td>
+                    <td th:text="${comment.articleId}">1</td>
+                    <td th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">2026-06-13 12:00</td>
+                    <td class="action-cell">
+                        <form th:id="'delete-comment-' + ${comment.id}"
+                              th:action="@{/admin/comments/{commentId}/delete(commentId=${comment.id})}"
+                              method="post">
+                            <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <button class="button button-secondary admin-delete-button" type="button"
+                                    th:attr="data-delete-form=${'delete-comment-' + comment.id}">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<dialog id="delete-confirm-dialog" class="admin-dialog">
+    <form method="dialog" class="admin-dialog-content">
+        <h3>Delete comment?</h3>
+        <p>This action cannot be undone. All replies to this comment will also be deleted.</p>
+        <div class="admin-form-actions">
+            <button class="button button-secondary" type="submit">Cancel</button>
+            <button class="button button-primary admin-delete-confirm" type="button">Delete</button>
+        </div>
+    </form>
+</dialog>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<script>
+    (() => {
+        const dialog = document.getElementById('delete-confirm-dialog');
+        const confirmButton = document.querySelector('.admin-delete-confirm');
+        let formId = null;
+
+        document.querySelectorAll('[data-delete-form]').forEach((button) => {
+            button.addEventListener('click', () => {
+                formId = button.dataset.deleteForm;
+                if (dialog && typeof dialog.showModal === 'function') {
+                    dialog.showModal();
+                    return;
+                }
+                const form = document.getElementById(formId);
+                if (form && window.confirm('Delete this comment?')) {
+                    form.submit();
+                }
+            });
+        });
+
+        if (confirmButton) {
+            confirmButton.addEventListener('click', () => {
+                const form = formId ? document.getElementById(formId) : null;
+                if (dialog) {
+                    dialog.close();
+                }
+                if (form) {
+                    form.submit();
+                }
+            });
+        }
+    })();
+</script>
+</body>
+</html>
