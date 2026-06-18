@@ -13,8 +13,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.web.servlet.MockMvc;
+import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import org.springframework.test.util.ReflectionTestUtils;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -30,6 +36,7 @@ class BlogControllerTest {
     private MockMvc mockMvc;
     private BlogService blogService;
     private PortfolioService portfolioService;
+    private ArticleEngagementService engagementService;
     private PortfolioProperties properties;
     private GithubService githubService;
 
@@ -44,6 +51,7 @@ class BlogControllerTest {
         githubService = mock(GithubService.class);
         portfolioService = new PortfolioService(properties, githubService);
         blogService = mock(BlogService.class);
+        engagementService = mock(ArticleEngagementService.class);
 
         Article article = new Article();
         article.setId(1L);
@@ -61,8 +69,11 @@ class BlogControllerTest {
         when(blogService.findBySlug("test-article")).thenReturn(Optional.of(article));
         when(blogService.findBySlug("unknown")).thenReturn(Optional.empty());
         when(blogService.renderHtml("**bold** content")).thenReturn("<strong>bold</strong> content");
+        when(engagementService.getArticleLikeCount(1L)).thenReturn(0);
+        when(engagementService.hasLikedArticle(1L, "127.0.0.1")).thenReturn(false);
+        when(engagementService.getCommentTree(1L, "127.0.0.1")).thenReturn(List.of());
 
-        mockMvc = MockMvcBuilders.standaloneSetup(new BlogController(blogService, portfolioService))
+        mockMvc = MockMvcBuilders.standaloneSetup(new BlogController(blogService, portfolioService, engagementService))
                 .setViewResolvers(thymeleafViewResolver())
                 .build();
     }
@@ -108,6 +119,56 @@ class BlogControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("blog/list"))
                 .andExpect(model().attribute("currentTag", "java"));
+    }
+
+    @Test
+    void shouldToggleArticleLike() throws Exception {
+        when(engagementService.toggleArticleLike(1L, "127.0.0.1"))
+                .thenReturn(Map.of("liked", true, "count", 1));
+
+        mockMvc.perform(post("/blog/test-article/like"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.liked").value(true))
+                .andExpect(jsonPath("$.count").value(1));
+    }
+
+    @Test
+    void shouldAddComment() throws Exception {
+        ArticleComment savedComment = new ArticleComment();
+        ReflectionTestUtils.setField(savedComment, "id", 1L);
+        when(engagementService.addComment(eq(1L), isNull(), any(CommentForm.class), anyString()))
+                .thenReturn(savedComment);
+
+        mockMvc.perform(post("/blog/test-article/comment")
+                        .contentType("application/json")
+                        .content("{\"author\":\"Tester\",\"content\":\"Great post!\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    void shouldGetComments() throws Exception {
+        ArticleComment comment = new ArticleComment();
+        ReflectionTestUtils.setField(comment, "id", 1L);
+        comment.setAuthor("Tester");
+        comment.setContent("Nice!");
+        when(engagementService.getCommentTree(1L, "127.0.0.1"))
+                .thenReturn(List.of(comment));
+
+        mockMvc.perform(get("/blog/test-article/comments"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].author").value("Tester"));
+    }
+
+    @Test
+    void shouldToggleCommentLike() throws Exception {
+        when(engagementService.toggleCommentLike(5L, "127.0.0.1"))
+                .thenReturn(Map.of("liked", false, "count", 3));
+
+        mockMvc.perform(post("/blog/comments/5/like"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.liked").value(false))
+                .andExpect(jsonPath("$.count").value(3));
     }
 
     private ViewResolver thymeleafViewResolver() {
