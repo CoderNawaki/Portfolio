@@ -47,6 +47,7 @@ plan.md
 /infra/terraform/terraform.tfstate.backup
 /infra/terraform/.terraform/
 *.tfstate
+*.tfvars
 
 # Local env
 .env
