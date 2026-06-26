@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<main>
+    <section class="section notifications-section">
+        <div class="section-heading">
+            <p class="eyebrow">Notifications</p>
+            <h1>Blog release updates</h1>
+            <p class="notifications-intro">
+                These entries are created when an article transitions to published, so readers can see what just went live.
+            </p>
+        </div>
+
+        <div class="notification-toolbar">
+            <span class="notification-count" th:text="${notificationsPage.totalElements} + ' notification' + (${notificationsPage.totalElements} == 1 ? '' : 's')">0 notifications</span>
+        </div>
+
+        <div th:if="${#lists.isEmpty(notifications)}" class="notification-empty">
+            <p>No notifications yet.</p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(notifications)}" class="notification-grid notification-grid-page">
+            <article class="notification-card" th:each="notification : ${notifications}">
+                <p class="notification-label">Published</p>
+                <h2 class="notification-title">
+                    <a th:href="@{/blog/{slug}(slug=${notification.articleSlug})}" th:text="${notification.articleTitle}">Article title</a>
+                </h2>
+                <p class="notification-message" th:text="${notification.message}">A new article is live on the blog.</p>
+                <time class="notification-time" th:datetime="${notification.publishedAt}"
+                      th:text="${#temporals.format(notification.publishedAt, 'MMM d, yyyy')}">Date</time>
+            </article>
+        </div>
+
+        <div th:if="${notificationsPage.totalPages > 1}" class="blog-pagination">
+            <span th:if="${notificationsPage.hasPrevious()}">
+                <a th:href="@{/notifications(page=${notificationsPage.number - 1})}" class="pagination-link">&laquo; Previous</a>
+            </span>
+            <span class="pagination-info" th:text="'Page ' + (${notificationsPage.number} + 1) + ' of ' + ${notificationsPage.totalPages}">Page 1 of 1</span>
+            <span th:if="${notificationsPage.hasNext()}">
+                <a th:href="@{/notifications(page=${notificationsPage.number + 1})}" class="pagination-link">Next &raquo;</a>
+            </span>
+        </div>
+    </section>
+</main>
+
+<button id="scrollToTopBtn" type="button" aria-label="Scroll to top">Top</button>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+
+<script th:src="@{/script.js}"></script>
+</body>
+</html>

@@ -61,6 +61,7 @@ This project is a recruiter-facing portfolio application built to present Lama N
 
 3. **Access the Site**:
    - Portfolio: `http://localhost:8081/`
+   - Notifications: `http://localhost:8081/notifications`
    - Admin Login: `http://localhost:8081/login`
 
 4. **Optional Public URL Configuration**:
@@ -99,6 +100,7 @@ For end-to-end coverage, run the standard Gradle test suite:
 
 - Home page: portfolio overview, skills, and featured projects
 - Project case study pages: `/projects/{slug}`
+- Blog notification feed: `/notifications`
 - Admin inbox: secure review and management of contact submissions
 
 ## Monitoring Stack

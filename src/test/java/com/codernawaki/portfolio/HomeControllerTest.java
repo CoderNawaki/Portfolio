@@ -27,6 +27,7 @@ class HomeControllerTest {
     private PortfolioService portfolioService;
     private GithubService githubService;
     private BlogService blogService;
+    private BlogNotificationService notificationService;
     private PortfolioProperties properties;
 
     @BeforeEach
@@ -64,9 +65,11 @@ class HomeControllerTest {
 
         portfolioService = new PortfolioService(properties, githubService);
         blogService = mock(BlogService.class);
+        notificationService = mock(BlogNotificationService.class);
         when(blogService.getLatestPublishedArticles(anyInt())).thenReturn(List.of());
+        when(notificationService.getLatestNotifications(anyInt())).thenReturn(List.of());
 
-        mockMvc = MockMvcBuilders.standaloneSetup(new HomeController(portfolioService, blogService))
+        mockMvc = MockMvcBuilders.standaloneSetup(new HomeController(portfolioService, blogService, notificationService))
                 .setControllerAdvice(new GlobalModelAttributeAdvice(portfolioService))
                 .setViewResolvers(thymeleafViewResolver())
                 .build();
@@ -99,6 +102,7 @@ class HomeControllerTest {
                 .andExpect(content().contentTypeCompatibleWith("application/xml"))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("<loc>http://localhost:8081/</loc>")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("<loc>http://localhost:8081/login</loc>")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("<loc>http://localhost:8081/notifications</loc>")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("<loc>http://localhost:8081/projects/portfolio</loc>")));
     }
 

@@ -106,6 +106,27 @@
         </div>
     </section>
 
+    <section class="section reveal" th:if="${not #lists.isEmpty(latestNotifications)}" id="notifications">
+        <div class="section-heading">
+            <p class="eyebrow">Notifications</p>
+            <h2>New posts released on the blog</h2>
+        </div>
+        <div class="notification-grid">
+            <article class="notification-card" th:each="notification : ${latestNotifications}">
+                <p class="notification-label">New publication</p>
+                <h3 class="notification-title">
+                    <a th:href="@{/blog/{slug}(slug=${notification.articleSlug})}" th:text="${notification.articleTitle}">Article title</a>
+                </h3>
+                <p class="notification-message" th:text="${notification.message}">A new article is live on the blog.</p>
+                <time class="notification-time" th:datetime="${notification.publishedAt}"
+                      th:text="${#temporals.format(notification.publishedAt, 'MMM d, yyyy')}">Date</time>
+            </article>
+        </div>
+        <div class="section-footer-link">
+            <a th:href="@{/notifications}">View all notifications &rarr;</a>
+        </div>
+    </section>
+
     <section class="section reveal" id="skills">
         <div class="section-heading">
             <p class="eyebrow">Skills</p>
