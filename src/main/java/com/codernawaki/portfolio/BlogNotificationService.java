@@ -14,9 +14,12 @@ public class BlogNotificationService {
     private static final Sort NOTIFICATION_SORT = Sort.by(Sort.Direction.DESC, "publishedAt");
 
     private final BlogNotificationRepository notificationRepository;
+    private final ArticleRepository articleRepository;
 
-    public BlogNotificationService(BlogNotificationRepository notificationRepository) {
+    public BlogNotificationService(BlogNotificationRepository notificationRepository,
+                                   ArticleRepository articleRepository) {
         this.notificationRepository = notificationRepository;
+        this.articleRepository = articleRepository;
     }
 
     public void recordPublication(Article article) {
@@ -36,16 +39,28 @@ public class BlogNotificationService {
         notificationRepository.save(notification);
     }
 
-    public Page<BlogNotification> getNotifications(Pageable pageable) {
+    public Page<BlogNotificationView> getNotifications(Pageable pageable) {
         Pageable sorted = PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 NOTIFICATION_SORT);
-        return notificationRepository.findAll(sorted);
+        return notificationRepository.findAll(sorted).map(this::toView);
     }
 
-    public List<BlogNotification> getLatestNotifications(int count) {
+    public List<BlogNotificationView> getLatestNotifications(int count) {
         Pageable limit = PageRequest.of(0, count, NOTIFICATION_SORT);
-        return notificationRepository.findAll(limit).getContent();
+        return notificationRepository.findAll(limit).map(this::toView).getContent();
+    }
+
+    private BlogNotificationView toView(BlogNotification notification) {
+        String currentSlug = articleRepository.findById(notification.getArticleId())
+                .map(Article::getSlug)
+                .orElse(notification.getArticleSlug());
+        return new BlogNotificationView(
+                notification.getArticleId(),
+                notification.getArticleTitle(),
+                currentSlug,
+                notification.getMessage(),
+                notification.getPublishedAt());
     }
 }
