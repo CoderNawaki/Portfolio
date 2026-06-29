@@ -15,10 +15,13 @@ public class HomeController {
 
     private final PortfolioService portfolioService;
     private final BlogService blogService;
+    private final BlogNotificationService notificationService;
 
-    public HomeController(PortfolioService portfolioService, BlogService blogService) {
+    public HomeController(PortfolioService portfolioService, BlogService blogService,
+                          BlogNotificationService notificationService) {
         this.portfolioService = portfolioService;
         this.blogService = blogService;
+        this.notificationService = notificationService;
     }
 
     @GetMapping("/")
@@ -35,6 +38,7 @@ public class HomeController {
         model.addAttribute("projects", portfolioService.getFeaturedProjects());
         List<Article> latestPosts = blogService.getLatestPublishedArticles(3);
         model.addAttribute("latestPosts", latestPosts);
+        model.addAttribute("latestNotifications", notificationService.getLatestNotifications(3));
         model.addAttribute("pageTitle", props.getDisplayName() + " | Full Stack Developer Portfolio");
         model.addAttribute("pageDescription",
                 "Portfolio of Lama Nawaraj, a Java-first full stack developer in Japan covering Spring Boot, frontend delivery, testing, and recruiter-ready project case studies.");
@@ -76,6 +80,7 @@ public class HomeController {
         appendSitemapUrl(xml, baseUrl + "/");
         appendSitemapUrl(xml, baseUrl + "/login");
         appendSitemapUrl(xml, baseUrl + "/blog");
+        appendSitemapUrl(xml, baseUrl + "/notifications");
         for (Article article : blogService.getLatestPublishedArticles(50)) {
             appendSitemapUrl(xml, baseUrl + "/blog/" + article.getSlug());
         }

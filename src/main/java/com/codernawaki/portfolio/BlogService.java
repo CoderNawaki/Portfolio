@@ -10,6 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.vladsch.flexmark.html.HtmlRenderer;
@@ -23,11 +26,13 @@ public class BlogService {
     private static final Sort ADMIN_SORT = Sort.by(Sort.Direction.DESC, "updatedAt");
 
     private final ArticleRepository articleRepository;
+    private final BlogNotificationService notificationService;
     private final Parser markdownParser;
     private final HtmlRenderer markdownRenderer;
 
-    public BlogService(ArticleRepository articleRepository) {
+    public BlogService(ArticleRepository articleRepository, BlogNotificationService notificationService) {
         this.articleRepository = articleRepository;
+        this.notificationService = notificationService;
         MutableDataSet options = new MutableDataSet();
         this.markdownParser = Parser.builder(options).build();
         this.markdownRenderer = HtmlRenderer.builder(options).build();
@@ -75,21 +80,34 @@ public class BlogService {
         return articleRepository.findById(id);
     }
 
+    @Transactional
     public Article createArticle(ArticleForm form) {
         Article article = new Article();
+        ArticleStatus previousStatus = article.getStatus();
         applyForm(article, form);
         article.setSlug(resolveSlug(form, null));
-        return articleRepository.save(article);
+        Article saved = articleRepository.save(article);
+        if (previousStatus != ArticleStatus.PUBLISHED && saved.getStatus() == ArticleStatus.PUBLISHED) {
+            recordPublicationAfterCommit(saved);
+        }
+        return saved;
     }
 
+    @Transactional
     public Article updateArticle(Long id, ArticleForm form) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Article not found."));
+        ArticleStatus previousStatus = article.getStatus();
         applyForm(article, form);
         article.setSlug(resolveSlug(form, id));
-        return articleRepository.save(article);
+        Article saved = articleRepository.save(article);
+        if (previousStatus != ArticleStatus.PUBLISHED && saved.getStatus() == ArticleStatus.PUBLISHED) {
+            recordPublicationAfterCommit(saved);
+        }
+        return saved;
     }
 
+    @Transactional
     public void deleteArticle(Long id) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Article not found."));
@@ -149,6 +167,20 @@ public class BlogService {
         return articleRepository.findBySlug(slug)
                 .map(a -> !a.getId().equals(excludeId))
                 .orElse(false);
+    }
+
+    private void recordPublicationAfterCommit(Article article) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            notificationService.recordPublication(article);
+            return;
+        }
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                notificationService.recordPublication(article);
+            }
+        });
     }
 
     static String generateSlug(String input) {

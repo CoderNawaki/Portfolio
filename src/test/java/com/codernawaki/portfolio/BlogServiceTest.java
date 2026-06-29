@@ -18,12 +18,14 @@ import org.springframework.web.server.ResponseStatusException;
 class BlogServiceTest {
 
     private ArticleRepository articleRepository;
+    private BlogNotificationService notificationService;
     private BlogService blogService;
 
     @BeforeEach
     void setUp() {
         articleRepository = mock(ArticleRepository.class);
-        blogService = new BlogService(articleRepository);
+        notificationService = mock(BlogNotificationService.class);
+        blogService = new BlogService(articleRepository, notificationService);
     }
 
     @Test
@@ -201,6 +203,7 @@ class BlogServiceTest {
         saved.setId(1L);
         saved.setTitle("Test");
         saved.setStatus(ArticleStatus.PUBLISHED);
+        saved.setPublishedAt(Instant.now());
         when(articleRepository.save(any())).thenReturn(saved);
 
         ArticleForm form = new ArticleForm();
@@ -211,5 +214,48 @@ class BlogServiceTest {
         Article result = blogService.createArticle(form);
 
         assertEquals(ArticleStatus.PUBLISHED, result.getStatus());
+        verify(notificationService).recordPublication(saved);
+    }
+
+    @Test
+    void updateArticlePublishesDraftArticleAndCreatesNotification() {
+        Article existing = new Article();
+        existing.setId(1L);
+        existing.setTitle("Old Title");
+        existing.setStatus(ArticleStatus.DRAFT);
+        when(articleRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(articleRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(articleRepository.save(any())).thenReturn(existing);
+
+        ArticleForm form = new ArticleForm();
+        form.setTitle("Updated Title");
+        form.setContent("Updated Content");
+        form.setPublish(true);
+
+        Article result = blogService.updateArticle(1L, form);
+
+        assertEquals(ArticleStatus.PUBLISHED, result.getStatus());
+        verify(notificationService).recordPublication(existing);
+    }
+
+    @Test
+    void updateArticleDoesNotDuplicateNotificationForAlreadyPublishedArticle() {
+        Article existing = new Article();
+        existing.setId(1L);
+        existing.setTitle("Old Title");
+        existing.setStatus(ArticleStatus.PUBLISHED);
+        existing.setPublishedAt(Instant.now());
+        when(articleRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(articleRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(articleRepository.save(any())).thenReturn(existing);
+
+        ArticleForm form = new ArticleForm();
+        form.setTitle("Updated Title");
+        form.setContent("Updated Content");
+        form.setPublish(true);
+
+        blogService.updateArticle(1L, form);
+
+        verify(notificationService, never()).recordPublication(any());
     }
 }
