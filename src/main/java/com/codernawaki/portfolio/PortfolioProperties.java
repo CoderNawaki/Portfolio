@@ -16,6 +16,7 @@ public class PortfolioProperties {
     private String email;
     private String resumeLabel;
     private String availability;
+    private String blogPublicationNotificationMessage = "A new article is live on the blog.";
     private List<String> focusAreas;
     private List<String> proofPoints;
     private String bio;
@@ -44,6 +45,11 @@ public class PortfolioProperties {
 
     public String getAvailability() { return availability; }
     public void setAvailability(String availability) { this.availability = availability; }
+
+    public String getBlogPublicationNotificationMessage() { return blogPublicationNotificationMessage; }
+    public void setBlogPublicationNotificationMessage(String blogPublicationNotificationMessage) {
+        this.blogPublicationNotificationMessage = blogPublicationNotificationMessage;
+    }
 
     public List<String> getFocusAreas() { return focusAreas; }
     public void setFocusAreas(List<String> focusAreas) { this.focusAreas = focusAreas; }

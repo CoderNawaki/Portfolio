@@ -25,7 +25,6 @@ class NotificationControllerTest {
 
     private MockMvc mockMvc;
     private BlogNotificationService notificationService;
-    private PortfolioService portfolioService;
 
     @BeforeEach
     void setUp() {
@@ -33,20 +32,17 @@ class NotificationControllerTest {
         properties.setDisplayName("Lama Nawaraj");
         properties.setSiteUrl("http://localhost:8081");
 
-        portfolioService = mock(PortfolioService.class);
-        when(portfolioService.getProperties()).thenReturn(properties);
-
         notificationService = mock(BlogNotificationService.class);
-        BlogNotification notification = new BlogNotification();
-        notification.setId(1L);
-        notification.setArticleId(10L);
-        notification.setArticleTitle("New Article");
-        notification.setArticleSlug("new-article");
-        notification.setMessage("A new article is live on the blog.");
-        notification.setPublishedAt(Instant.now());
+        BlogNotificationView notification = new BlogNotificationView(
+                1L,
+                10L,
+                "New Article",
+                "new-article",
+                "A new article is live on the blog.",
+                Instant.now());
         when(notificationService.getNotifications(any(Pageable.class))).thenReturn(new org.springframework.data.domain.PageImpl<>(List.of(notification)));
 
-        mockMvc = MockMvcBuilders.standaloneSetup(new NotificationController(notificationService, portfolioService))
+        mockMvc = MockMvcBuilders.standaloneSetup(new NotificationController(notificationService, properties))
                 .setViewResolvers(thymeleafViewResolver())
                 .build();
     }

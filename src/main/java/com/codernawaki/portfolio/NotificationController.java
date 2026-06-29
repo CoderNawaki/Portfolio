@@ -1,5 +1,6 @@
 package com.codernawaki.portfolio;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -13,27 +14,28 @@ public class NotificationController {
     private static final int NOTIFICATIONS_PER_PAGE = 10;
 
     private final BlogNotificationService notificationService;
-    private final PortfolioService portfolioService;
+    private final PortfolioProperties portfolioProperties;
 
-    public NotificationController(BlogNotificationService notificationService, PortfolioService portfolioService) {
+    @Autowired
+    public NotificationController(BlogNotificationService notificationService, PortfolioProperties portfolioProperties) {
         this.notificationService = notificationService;
-        this.portfolioService = portfolioService;
+        this.portfolioProperties = portfolioProperties;
     }
 
     @GetMapping("/notifications")
     public String notifications(
             @RequestParam(defaultValue = "0") int page,
             Model model) {
-        PortfolioProperties props = portfolioService.getProperties();
         int safePage = Math.max(page, 0);
-        Page<BlogNotification> notificationsPage = notificationService.getNotifications(
+        Page<BlogNotificationView> notificationsPage = notificationService.getNotifications(
                 PageRequest.of(safePage, NOTIFICATIONS_PER_PAGE));
 
         model.addAttribute("notificationsPage", notificationsPage);
         model.addAttribute("notifications", notificationsPage.getContent());
-        model.addAttribute("pageTitle", "Notifications | " + props.getDisplayName());
-        model.addAttribute("pageDescription", "Recent blog publication notifications on " + props.getDisplayName() + ".");
-        model.addAttribute("pageUrl", props.getSiteUrl() + "/notifications");
+        model.addAttribute("pageTitle", "Notifications | " + portfolioProperties.getDisplayName());
+        model.addAttribute("pageDescription",
+                "Recent blog publication notifications on " + portfolioProperties.getDisplayName() + ".");
+        model.addAttribute("pageUrl", portfolioProperties.getSiteUrl() + "/notifications");
         return "notifications/list";
     }
 }

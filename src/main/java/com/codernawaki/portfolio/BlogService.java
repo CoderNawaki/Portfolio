@@ -11,6 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.vladsch.flexmark.html.HtmlRenderer;
@@ -86,7 +88,7 @@ public class BlogService {
         article.setSlug(resolveSlug(form, null));
         Article saved = articleRepository.save(article);
         if (previousStatus != ArticleStatus.PUBLISHED && saved.getStatus() == ArticleStatus.PUBLISHED) {
-            notificationService.recordPublication(saved);
+            recordPublicationAfterCommit(saved);
         }
         return saved;
     }
@@ -100,7 +102,7 @@ public class BlogService {
         article.setSlug(resolveSlug(form, id));
         Article saved = articleRepository.save(article);
         if (previousStatus != ArticleStatus.PUBLISHED && saved.getStatus() == ArticleStatus.PUBLISHED) {
-            notificationService.recordPublication(saved);
+            recordPublicationAfterCommit(saved);
         }
         return saved;
     }
@@ -165,6 +167,20 @@ public class BlogService {
         return articleRepository.findBySlug(slug)
                 .map(a -> !a.getId().equals(excludeId))
                 .orElse(false);
+    }
+
+    private void recordPublicationAfterCommit(Article article) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            notificationService.recordPublication(article);
+            return;
+        }
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                notificationService.recordPublication(article);
+            }
+        });
     }
 
     static String generateSlug(String input) {
