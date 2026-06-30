@@ -156,19 +156,19 @@
         var lightLink = document.createElement('link');
         lightLink.id = 'hljs-light';
         lightLink.rel = 'stylesheet';
-        lightLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        lightLink.href = '/vendor/highlight/github.min.css';
         lightLink.disabled = theme !== 'light';
         document.head.appendChild(lightLink);
 
         var darkLink = document.createElement('link');
         darkLink.id = 'hljs-dark';
         darkLink.rel = 'stylesheet';
-        darkLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        darkLink.href = '/vendor/highlight/github-dark.min.css';
         darkLink.disabled = theme !== 'dark';
         document.head.appendChild(darkLink);
     })();
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script th:src="@{/vendor/highlight/highlight.min.js}"></script>
 <script>hljs.highlightAll();</script>
 
 <script>
