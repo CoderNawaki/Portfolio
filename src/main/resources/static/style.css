@@ -1,7 +1,7 @@
 :root {
     /* Light Colors (Default) */
     --bg: #f4efe5;
-    --bg-panel: rgba(255, 255, 255, 0.72);
+    --bg-panel: rgba(255, 255, 255, 0.78);
     --surface: #fffaf3;
     --surface-strong: #f0dfc2;
     --ink: #1e2430;
@@ -12,6 +12,17 @@
     --accent-soft: #eabf8f;
     --error: #b12626;
     --success: #23653a;
+    --panel-border: rgba(255, 255, 255, 0.45);
+    --glass-bg: rgba(252, 247, 238, 0.76);
+    --control-bg: rgba(255, 255, 255, 0.82);
+    --control-bg-hover: rgba(255, 255, 255, 0.92);
+    --dialog-bg: #fffaf4;
+    --status-pill-new-bg: rgba(184, 80, 46, 0.12);
+    --status-pill-new-color: var(--accent-dark);
+    --status-pill-reviewed-bg: rgba(43, 108, 176, 0.14);
+    --status-pill-reviewed-color: #1f4e80;
+    --status-pill-replied-bg: rgba(42, 122, 87, 0.14);
+    --status-pill-replied-color: #1f6e4e;
     --button-secondary-bg: rgba(255, 255, 255, 0.58);
     --button-secondary-bg-hover: rgba(255, 255, 255, 0.78);
     --button-secondary-color: var(--ink);
@@ -20,6 +31,9 @@
     --utility-button-bg-hover: #12161d;
     --utility-button-color: #fff;
     --utility-button-border: transparent;
+    --selection-bg: rgba(184, 80, 46, 0.08);
+    --accent-bg-subtle: rgba(184, 80, 46, 0.08);
+    --dialog-backdrop: rgba(18, 16, 14, 0.45);
     
     /* Layout */
     --content-width: 1180px;
@@ -31,16 +45,27 @@
 }
 
 [data-theme="dark"] {
-    --bg: #0f141a;
-    --bg-panel: rgba(30, 38, 48, 0.72);
-    --surface: #1e2430;
-    --surface-strong: #2d3643;
-    --ink: #f1f5f9;
-    --muted: #94a3b8;
-    --line: rgba(241, 245, 249, 0.12);
-    --accent: #e56d45;
-    --accent-dark: #f0a282;
-    --accent-soft: #603020;
+    --bg: #0d1218;
+    --bg-panel: rgba(20, 26, 35, 0.94);
+    --surface: #151b24;
+    --surface-strong: #212b39;
+    --ink: #f6f8fb;
+    --muted: #b3bfcc;
+    --line: rgba(148, 163, 184, 0.2);
+    --accent: #e57a52;
+    --accent-dark: #ffb38f;
+    --accent-soft: #40261d;
+    --panel-border: rgba(148, 163, 184, 0.24);
+    --glass-bg: rgba(20, 26, 35, 0.88);
+    --control-bg: rgba(20, 26, 35, 0.96);
+    --control-bg-hover: rgba(29, 38, 50, 0.98);
+    --dialog-bg: #131923;
+    --status-pill-new-bg: rgba(229, 122, 82, 0.18);
+    --status-pill-new-color: #ffb18b;
+    --status-pill-reviewed-bg: rgba(96, 165, 250, 0.16);
+    --status-pill-reviewed-color: #93c5fd;
+    --status-pill-replied-bg: rgba(34, 197, 94, 0.16);
+    --status-pill-replied-color: #86efac;
     --shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
     --button-secondary-bg: rgba(30, 38, 48, 0.9);
     --button-secondary-bg-hover: rgba(45, 54, 67, 0.98);
@@ -50,6 +75,9 @@
     --utility-button-bg-hover: rgba(65, 77, 94, 1);
     --utility-button-color: var(--ink);
     --utility-button-border: rgba(148, 163, 184, 0.22);
+    --selection-bg: rgba(229, 122, 82, 0.18);
+    --accent-bg-subtle: rgba(229, 122, 82, 0.18);
+    --dialog-backdrop: rgba(0, 0, 0, 0.65);
 }
 
 /* Base */
@@ -80,7 +108,18 @@ body::before {
     background:
             radial-gradient(circle at top left, rgba(229, 109, 69, 0.08), transparent 32%),
             radial-gradient(circle at 90% 15%, rgba(96, 48, 32, 0.2), transparent 25%),
-            linear-gradient(180deg, #0f141a 0%, #161c24 100%);
+            linear-gradient(180deg, var(--bg) 0%, #161c24 100%);
+}
+
+[data-theme="dark"] .hero-copy {
+    background:
+            radial-gradient(circle at 18% 20%, rgba(229, 122, 82, 0.15), transparent 24%),
+            radial-gradient(circle at 82% 18%, rgba(64, 38, 29, 0.5), transparent 30%),
+            linear-gradient(145deg, rgba(20, 26, 35, 0.96), rgba(30, 20, 15, 0.94));
+}
+
+[data-theme="dark"] .project-body {
+    background: var(--surface);
 }
 
 a { color: inherit; text-decoration: none; transition: color 0.2s; }
@@ -104,9 +143,9 @@ main, .site-header, .site-footer {
     align-items: center;
     justify-content: space-between;
     padding: 1rem 1.25rem;
-    border: 1px solid rgba(255, 255, 255, 0.45);
+    border: 1px solid var(--panel-border);
     border-radius: 999px;
-    background: rgba(252, 247, 238, 0.76);
+    background: var(--glass-bg);
     backdrop-filter: blur(18px);
     box-shadow: 0 16px 40px rgba(58, 46, 33, 0.08);
 }
@@ -139,7 +178,7 @@ main { padding: 2rem 0 5rem; }
 
 /* Components */
 .panel-base {
-    border: 1px solid rgba(255, 255, 255, 0.52);
+    border: 1px solid var(--panel-border);
     border-radius: var(--radius-xl);
     background: var(--bg-panel);
     box-shadow: var(--shadow);
@@ -240,7 +279,8 @@ main { padding: 2rem 0 5rem; }
     padding: 0.95rem 1rem;
     border: 1px solid var(--line);
     border-radius: var(--radius-md);
-    background: rgba(255, 255, 255, 0.82);
+    background: var(--control-bg);
+    color: var(--ink);
 }
 .contact-form input.has-error, .contact-form textarea.has-error {
     border-color: rgba(177, 38, 38, 0.55);
@@ -285,7 +325,7 @@ main { padding: 2rem 0 5rem; }
 .admin-table-card {
     margin-bottom: 1.5rem;
     padding: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.52);
+    border: 1px solid var(--panel-border);
     border-radius: var(--radius-xl);
     background: var(--bg-panel);
     box-shadow: var(--shadow);
@@ -332,7 +372,8 @@ main { padding: 2rem 0 5rem; }
     padding: 0.8rem 0.95rem;
     border: 1px solid var(--line);
     border-radius: var(--radius-md);
-    background: rgba(255, 255, 255, 0.82);
+    background: var(--control-bg);
+    color: var(--ink);
 }
 .admin-flash-message {
     margin: 0 0 1rem;
@@ -374,7 +415,7 @@ main { padding: 2rem 0 5rem; }
     padding: 1.25rem;
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
-    background: rgba(255, 255, 255, 0.72);
+    background: var(--surface);
 }
 .admin-detail-panel h4 {
     margin-bottom: 1rem;
@@ -419,28 +460,28 @@ main { padding: 2rem 0 5rem; }
     min-width: 15rem;
 }
 .submission-row-selected {
-    background: rgba(184, 80, 46, 0.08);
+    background: var(--selection-bg);
 }
 .status-pill {
     display: inline-flex;
     padding: 0.35rem 0.8rem;
     border-radius: 999px;
-    background: rgba(184, 80, 46, 0.12);
-    color: var(--accent-dark);
+    background: var(--status-pill-new-bg);
+    color: var(--status-pill-new-color);
     font-size: 0.82rem;
     font-weight: 700;
 }
 .status-pill-new {
-    background: rgba(184, 80, 46, 0.12);
-    color: var(--accent-dark);
+    background: var(--status-pill-new-bg);
+    color: var(--status-pill-new-color);
 }
 .status-pill-reviewed {
-    background: rgba(43, 108, 176, 0.14);
-    color: #1f4e80;
+    background: var(--status-pill-reviewed-bg);
+    color: var(--status-pill-reviewed-color);
 }
 .status-pill-replied {
-    background: rgba(42, 122, 87, 0.14);
-    color: #1f6e4e;
+    background: var(--status-pill-replied-bg);
+    color: var(--status-pill-replied-color);
 }
 .empty-value {
     color: var(--muted);
@@ -473,11 +514,11 @@ main { padding: 2rem 0 5rem; }
     box-shadow: var(--shadow);
 }
 .admin-dialog::backdrop {
-    background: rgba(18, 16, 14, 0.45);
+    background: var(--dialog-backdrop);
 }
 .admin-dialog-content {
     padding: 1.5rem;
-    background: #fffaf4;
+    background: var(--dialog-bg);
 }
 .admin-pagination {
     margin-top: 1.25rem;
@@ -496,7 +537,7 @@ main { padding: 2rem 0 5rem; }
     padding: 0.65rem 0.9rem;
     border: 1px solid var(--line);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.58);
+    background: var(--control-bg);
     font-weight: 700;
 }
 .admin-page-link.is-active {
@@ -527,7 +568,7 @@ main { padding: 2rem 0 5rem; }
 
 .project-detail-intro,
 .project-detail-card {
-    border: 1px solid rgba(255, 255, 255, 0.52);
+    border: 1px solid var(--panel-border);
     border-radius: var(--radius-xl);
     background: var(--bg-panel);
     box-shadow: var(--shadow);
@@ -777,7 +818,7 @@ main { padding: 2rem 0 5rem; }
 .engagement-btn.is-liked {
     color: var(--accent);
     border-color: var(--accent);
-    background: rgba(184, 80, 46, 0.08);
+    background: var(--accent-bg-subtle);
 }
 .like-icon { flex-shrink: 0; }
 .like-count { font-weight: 700; }
@@ -810,7 +851,7 @@ main { padding: 2rem 0 5rem; }
 .share-btn:hover {
     color: var(--accent);
     border-color: var(--accent);
-    background: rgba(184, 80, 46, 0.08);
+    background: var(--accent-bg-subtle);
 }
 
 /* Comments Section */
@@ -864,7 +905,7 @@ main { padding: 2rem 0 5rem; }
     padding: 0.6rem 0.8rem;
     border: 1px solid var(--line);
     border-radius: var(--radius-md);
-    background: var(--bg);
+    background: var(--surface);
     color: var(--ink);
     font-family: inherit;
     font-size: 0.9rem;
