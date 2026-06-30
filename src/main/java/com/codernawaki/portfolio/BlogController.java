@@ -1,6 +1,7 @@
 package com.codernawaki.portfolio;
 
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +45,14 @@ public class BlogController {
         PortfolioProperties props = portfolioService.getProperties();
         var articlesPage = blogService.getPublishedArticles(PageRequest.of(page, ARTICLES_PER_PAGE), tag);
 
+        Map<Long, Integer> readingTimes = new HashMap<>();
+        for (Article article : articlesPage.getContent()) {
+            readingTimes.put(article.getId(), blogService.estimateReadingTime(article.getContent()));
+        }
+
         model.addAttribute("articlesPage", articlesPage);
         model.addAttribute("articles", articlesPage.getContent());
+        model.addAttribute("readingTimes", readingTimes);
         model.addAttribute("currentTag", tag);
         model.addAttribute("pageTitle", tag != null ? tag + " | Blog | " + props.getDisplayName() : "Blog | " + props.getDisplayName());
         model.addAttribute("pageDescription", "Articles and case studies from a full stack developer in Japan.");
@@ -66,6 +73,7 @@ public class BlogController {
 
         model.addAttribute("article", article);
         model.addAttribute("htmlContent", blogService.renderHtml(article.getContent()));
+        model.addAttribute("readingTime", blogService.estimateReadingTime(article.getContent()));
         model.addAttribute("likeCount", likeCount);
         model.addAttribute("liked", liked);
         model.addAttribute("comments", comments);

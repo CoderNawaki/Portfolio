@@ -36,6 +36,7 @@
                 <p class="blog-card-excerpt" th:text="${article.excerpt}">Excerpt</p>
                 <div class="blog-card-meta">
                     <time th:datetime="${article.publishedAt}" th:text="${#temporals.format(article.publishedAt, 'MMM d, yyyy')}">Date</time>
+                    <span class="reading-time" th:text="${readingTimes[article.id]} + ' min read'">3 min read</span>
                     <span th:if="${article.tags != null and !article.tags.isEmpty()}" class="blog-card-tags">
                         <a class="blog-tag" th:each="tag : ${#strings.listSplit(article.tags, ',')}" th:href="@{/blog(tag=${#strings.trim(tag)})}" th:text="${#strings.trim(tag)}">tag</a>
                     </span>

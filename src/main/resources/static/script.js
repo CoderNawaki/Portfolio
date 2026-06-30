@@ -20,6 +20,13 @@ function initTheme() {
         
         document.documentElement.setAttribute("data-theme", newTheme);
         localStorage.setItem("theme", newTheme);
+
+        const lightHljs = document.getElementById("hljs-light");
+        const darkHljs = document.getElementById("hljs-dark");
+        if (lightHljs && darkHljs) {
+            lightHljs.disabled = newTheme === "dark";
+            darkHljs.disabled = newTheme === "light";
+        }
     });
 }
 

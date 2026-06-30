@@ -783,6 +783,32 @@ main { padding: 2rem 0 5rem; }
     color: var(--muted);
 }
 
+/* Reading Progress Bar */
+.reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: var(--accent);
+    z-index: 1000;
+    transition: width 0.1s linear;
+    pointer-events: none;
+}
+
+/* Reading Time */
+.reading-time {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+.reading-time::before {
+    content: "\2022";
+    margin-right: 0.5rem;
+    opacity: 0.4;
+}
+
 /* Blog: Detail */
 .blog-detail-section { max-width: 780px; margin: 0 auto; padding: 2rem 1.5rem; }
 .breadcrumb { font-size: 0.9rem; color: var(--muted); margin-bottom: 2rem; }
@@ -795,9 +821,10 @@ main { padding: 2rem 0 5rem; }
 .blog-article-content h2 { margin-top: 2rem; }
 .blog-article-content h3 { margin-top: 1.5rem; }
 .blog-article-content p { margin: 1rem 0; }
-.blog-article-content pre { background: var(--surface); padding: 1rem; border-radius: var(--radius-md); overflow-x: auto; border: 1px solid var(--line); }
-.blog-article-content code { font-size: 0.9em; background: var(--surface-strong); padding: 0.15rem 0.35rem; border-radius: 4px; }
-.blog-article-content pre code { background: transparent; padding: 0; }
+.blog-article-content pre { padding: 1rem; border-radius: var(--radius-md); overflow-x: auto; border: 1px solid var(--line); background: var(--surface) !important; }
+.blog-article-content code { font-size: 0.9em; background: var(--surface-strong); padding: 0.15rem 0.35rem; border-radius: 4px; color: var(--ink); }
+.blog-article-content pre code { background: transparent !important; padding: 0; color: inherit; }
+.blog-article-content pre .hljs { background: transparent; }
 .blog-article-content img { max-width: 100%; border-radius: var(--radius-md); }
 .blog-article-content blockquote { border-left: 3px solid var(--accent); margin: 1rem 0; padding: 0.5rem 1rem; background: var(--surface); border-radius: 0 var(--radius-md) var(--radius-md) 0; color: var(--muted); }
 /* Engagement Bar */
