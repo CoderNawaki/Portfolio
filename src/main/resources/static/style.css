@@ -108,7 +108,7 @@ body::before {
     background:
             radial-gradient(circle at top left, rgba(229, 109, 69, 0.08), transparent 32%),
             radial-gradient(circle at 90% 15%, rgba(96, 48, 32, 0.2), transparent 25%),
-            linear-gradient(180deg, var(--bg) 0%, #161c24 100%);
+            linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%);
 }
 
 [data-theme="dark"] .hero-copy {
@@ -228,7 +228,10 @@ main { padding: 2rem 0 5rem; }
 }
 
 .hero-copy {
-    @extend .panel-base;
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -244,7 +247,10 @@ main { padding: 2rem 0 5rem; }
 .hero-summary { max-width: 42rem; margin: 1.25rem 0 0; color: var(--muted); font-size: 1.1rem; line-height: 1.8; }
 
 .hero-panel {
-    @extend .panel-base;
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
     padding: 2rem;
     background: linear-gradient(180deg, rgba(33, 41, 51, 0.94), rgba(60, 41, 31, 0.86));
     color: #fff8ef;
@@ -255,7 +261,10 @@ main { padding: 2rem 0 5rem; }
 .project-case { display: grid; grid-template-columns: 0.78fr 1.22fr; gap: 1.2rem; }
 
 .project-overview {
-    @extend .panel-base;
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
     display: flex;
     flex-direction: column;
     padding: 1.6rem;
@@ -264,12 +273,15 @@ main { padding: 2rem 0 5rem; }
 }
 
 .project-body {
-    @extend .panel-base;
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     padding: 1.6rem;
-    background: rgba(255, 252, 247, 0.72);
+    background: var(--bg-panel);
 }
 
 /* Forms */
