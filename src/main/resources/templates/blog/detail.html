@@ -2,6 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments :: head}"></head>
 <body>
+<div class="reading-progress" id="readingProgress"></div>
 <header th:replace="~{fragments :: header}"></header>
 
 <main>
@@ -16,6 +17,7 @@
                 <h1 th:text="${article.title}">Article title</h1>
                 <div class="blog-article-meta">
                     <time th:datetime="${article.publishedAt}" th:text="${#temporals.format(article.publishedAt, 'MMM d, yyyy')}">Date</time>
+                    <span class="reading-time" th:text="${readingTime} + ' min read'">3 min read</span>
                     <span th:if="${article.tags != null and !article.tags.isEmpty()}">
                         <span class="blog-tag" th:each="tag : ${#strings.listSplit(article.tags, ',')}" th:text="${#strings.trim(tag)}">tag</span>
                     </span>
@@ -146,5 +148,50 @@
 
 <script th:src="@{/script.js}"></script>
 <script th:src="@{/engagement.js}"></script>
+
+<script>
+    (function() {
+        var theme = document.documentElement.getAttribute('data-theme') || 'light';
+
+        var lightLink = document.createElement('link');
+        lightLink.id = 'hljs-light';
+        lightLink.rel = 'stylesheet';
+        lightLink.href = '/vendor/highlight/github.min.css';
+        lightLink.disabled = theme !== 'light';
+        document.head.appendChild(lightLink);
+
+        var darkLink = document.createElement('link');
+        darkLink.id = 'hljs-dark';
+        darkLink.rel = 'stylesheet';
+        darkLink.href = '/vendor/highlight/github-dark.min.css';
+        darkLink.disabled = theme !== 'dark';
+        document.head.appendChild(darkLink);
+    })();
+</script>
+<script th:src="@{/vendor/highlight/highlight.min.js}"></script>
+<script>hljs.highlightAll();</script>
+
+<script>
+    function initReadingProgress() {
+        var bar = document.getElementById('readingProgress');
+        if (!bar) return;
+
+        var article = document.querySelector('.blog-article');
+        if (!article) return;
+
+        function updateProgress() {
+            var rect = article.getBoundingClientRect();
+            var totalHeight = rect.height;
+            var scrollTop = window.scrollY - rect.top + window.innerHeight;
+            var progress = Math.min(Math.max(scrollTop / totalHeight, 0), 1);
+            bar.style.width = (progress * 100) + '%';
+        }
+
+        window.addEventListener('scroll', updateProgress, { passive: true });
+        window.addEventListener('resize', updateProgress);
+        updateProgress();
+    }
+    initReadingProgress();
+</script>
 </body>
 </html>

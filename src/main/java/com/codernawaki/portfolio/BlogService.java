@@ -121,6 +121,13 @@ public class BlogService {
         return markdownRenderer.render(markdownParser.parse(markdown));
     }
 
+    public int estimateReadingTime(String content) {
+        if (content == null || content.isBlank()) return 1;
+        String[] words = content.trim().split("\\s+");
+        int minutes = (int) Math.ceil((double) words.length / 200);
+        return Math.max(minutes, 1);
+    }
+
     private void applyForm(Article article, ArticleForm form) {
         article.setTitle(form.getTitle());
         article.setContent(form.getContent());
