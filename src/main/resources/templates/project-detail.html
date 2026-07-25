@@ -1,29 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments :: head}"></head>
-<script type="module">
-    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-    mermaid.initialize({ 
-        startOnLoad: true,
-        theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
-    });
-    
-    // Listen for theme changes to update mermaid
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.attributeName === 'data-theme') {
-                const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default';
-                mermaid.initialize({ startOnLoad: false, theme });
-                // Force re-render of diagrams
-                document.querySelectorAll('.mermaid').forEach(el => {
-                   el.removeAttribute('data-processed');
-                   mermaid.run({ nodes: [el] });
-                });
-            }
-        });
-    });
-    observer.observe(document.documentElement, { attributes: true });
-</script>
 <body>
 <header th:replace="~{fragments :: header}"></header>
 
@@ -49,37 +26,27 @@
         </div>
     </section>
 
-    <section class="section architecture-section reveal">
+    <section class="section project-detail-story reveal">
         <div class="section-heading">
-            <p class="eyebrow">Architecture</p>
-            <h2>Request flow and system design</h2>
+            <p class="eyebrow">Case Study</p>
+            <h2>Context, contribution, and result</h2>
         </div>
-        <div class="diagram-card project-detail-card">
-            <div class="mermaid">
-                sequenceDiagram
-                    participant User
-                    participant Controller
-                    participant Service
-                    participant Repository
-                    participant Database
-
-                    User->>Controller: Request
-                    Controller->>Service: Process Request
-                    Service->>Repository: Query Data
-                    Repository->>Database: SQL
-                    Database-->>Repository: Result Set
-                    Repository-->>Service: Domain Object
-                    Service-->>Controller: DTO
-                    Controller-->>User: View/JSON
+        <div class="project-detail-summary project-detail-card">
+            <div>
+                <p class="project-label">Problem</p>
+                <p th:text="${project.problem()}">Problem statement</p>
             </div>
-            <p class="diagram-caption">Standard layered request flow implemented in this project.</p>
+            <div>
+                <p class="project-label">My contribution</p>
+                <p th:text="${project.highlight()}">Project highlight</p>
+            </div>
         </div>
     </section>
 
     <section class="section project-detail-grid reveal">
         <article class="project-detail-card">
-            <p class="project-label">Problem</p>
-            <p th:text="${project.problem()}">Problem statement</p>
+            <p class="project-label">Stack</p>
+            <p th:text="${project.stack()}">Java, Spring Boot</p>
         </article>
         <article class="project-detail-card">
             <p class="project-label">Backend contribution</p>
@@ -90,7 +57,11 @@
             <p th:text="${project.frontendFocus()}">Frontend focus</p>
         </article>
         <article class="project-detail-card">
-            <p class="project-label">Access note</p>
+            <p class="project-label">Outcome</p>
+            <p th:text="${project.outcome()}">Outcome summary</p>
+        </article>
+        <article class="project-detail-card project-detail-wide-card">
+            <p class="project-label">Repository access</p>
             <p th:text="${project.accessNote()}">Repository note</p>
         </article>
     </section>

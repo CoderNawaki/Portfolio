@@ -19,7 +19,7 @@ function initTheme() {
         const newTheme = currentTheme === "dark" ? "light" : "dark";
         
         document.documentElement.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
+        saveTheme(newTheme);
 
         const lightHljs = document.getElementById("hljs-light");
         const darkHljs = document.getElementById("hljs-dark");
@@ -28,6 +28,14 @@ function initTheme() {
             darkHljs.disabled = newTheme === "light";
         }
     });
+}
+
+function saveTheme(theme) {
+    try {
+        localStorage.setItem("theme", theme);
+    } catch (error) {
+        return;
+    }
 }
 
 function initSystemStatus() {
