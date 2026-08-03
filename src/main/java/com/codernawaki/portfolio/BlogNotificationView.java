@@ -9,14 +9,4 @@ public record BlogNotificationView(
         String articleSlug,
         String message,
         Instant publishedAt) {
-
-    public static BlogNotificationView from(BlogNotification notification) {
-        return new BlogNotificationView(
-                notification.getId(),
-                notification.getArticleId(),
-                notification.getArticleTitle(),
-                notification.getArticleSlug(),
-                notification.getMessage(),
-                notification.getPublishedAt());
-    }
 }

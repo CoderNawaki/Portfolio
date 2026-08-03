@@ -63,10 +63,9 @@ public class BlogController {
     @GetMapping("/blog/{slug}")
     public String blogDetail(@PathVariable String slug, Model model, HttpServletRequest request) {
         PortfolioProperties props = portfolioService.getProperties();
-        Article article = blogService.findBySlug(slug)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Article not found."));
+        Article article = resolveArticle(slug);
 
-        String ip = getClientIp(request);
+        String ip = ClientIpResolver.resolve(request);
         int likeCount = engagementService.getArticleLikeCount(article.getId());
         boolean liked = engagementService.hasLikedArticle(article.getId(), ip);
         List<ArticleComment> comments = engagementService.getCommentTree(article.getId(), ip);
@@ -88,9 +87,8 @@ public class BlogController {
     @PostMapping("/blog/{slug}/like")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> toggleLike(@PathVariable String slug, HttpServletRequest request) {
-        Article article = blogService.findBySlug(slug)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Article not found."));
-        Map<String, Object> result = engagementService.toggleArticleLike(article.getId(), getClientIp(request));
+        Article article = resolveArticle(slug);
+        Map<String, Object> result = engagementService.toggleArticleLike(article.getId(), ClientIpResolver.resolve(request));
         return ResponseEntity.ok(result);
     }
 
@@ -99,18 +97,16 @@ public class BlogController {
     public ResponseEntity<?> addComment(@PathVariable String slug,
                                         @Valid @RequestBody CommentForm form,
                                         HttpServletRequest request) {
-        Article article = blogService.findBySlug(slug)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Article not found."));
-        ArticleComment comment = engagementService.addComment(article.getId(), form.getParentId(), form, getClientIp(request));
+        Article article = resolveArticle(slug);
+        ArticleComment comment = engagementService.addComment(article.getId(), form.getParentId(), form, ClientIpResolver.resolve(request));
         return ResponseEntity.ok(Map.of("id", comment.getId(), "message", "Comment added."));
     }
 
     @GetMapping("/blog/{slug}/comments")
     @ResponseBody
     public ResponseEntity<List<ArticleComment>> getComments(@PathVariable String slug, HttpServletRequest request) {
-        Article article = blogService.findBySlug(slug)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Article not found."));
-        List<ArticleComment> comments = engagementService.getCommentTree(article.getId(), getClientIp(request));
+        Article article = resolveArticle(slug);
+        List<ArticleComment> comments = engagementService.getCommentTree(article.getId(), ClientIpResolver.resolve(request));
         return ResponseEntity.ok(comments);
     }
 
@@ -118,20 +114,13 @@ public class BlogController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> toggleCommentLike(@PathVariable Long commentId,
                                                                   HttpServletRequest request) {
-        Map<String, Object> result = engagementService.toggleCommentLike(commentId, getClientIp(request));
+        Map<String, Object> result = engagementService.toggleCommentLike(commentId, ClientIpResolver.resolve(request));
         return ResponseEntity.ok(result);
     }
 
-    private String getClientIp(HttpServletRequest request) {
-        String xForwardedFor = request.getHeader("X-Forwarded-For");
-        if (xForwardedFor != null && !xForwardedFor.isBlank()) {
-            return xForwardedFor.split(",")[0].trim();
-        }
-        String cfConnectingIp = request.getHeader("CF-Connecting-IP");
-        if (cfConnectingIp != null && !cfConnectingIp.isBlank()) {
-            return cfConnectingIp;
-        }
-        return request.getRemoteAddr();
+    private Article resolveArticle(String slug) {
+        return blogService.findBySlug(slug)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Article not found."));
     }
 
     @GetMapping(value = "/blog/feed.xml", produces = "application/xml")

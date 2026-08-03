@@ -28,7 +28,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         
         if ("/submitContactForm".equals(request.getRequestURI()) && "POST".equalsIgnoreCase(request.getMethod())) {
-            String clientIp = getClientIP(request);
+            String clientIp = ClientIpResolver.resolve(request);
             RateLimitService.ResolvedBucket resolvedBucket = rateLimitService.resolveBucket(clientIp);
             Bucket bucket = resolvedBucket.bucket();
             ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
@@ -46,13 +46,5 @@ public class RateLimitFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private String getClientIP(HttpServletRequest request) {
-        String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null) {
-            return request.getRemoteAddr();
-        }
-        return xfHeader.split(",")[0];
     }
 }
