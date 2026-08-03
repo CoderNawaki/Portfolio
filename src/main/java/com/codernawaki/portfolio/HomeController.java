@@ -41,7 +41,7 @@ public class HomeController {
         model.addAttribute("latestNotifications", notificationService.getLatestNotifications(3));
         model.addAttribute("pageTitle", props.getDisplayName() + " | Full Stack Developer Portfolio");
         model.addAttribute("pageDescription",
-                "Portfolio of Lama Nawaraj, a Java-first full stack developer in Japan covering Spring Boot, frontend delivery, testing, and recruiter-ready project case studies.");
+                "Java-first full stack developer portfolio for Lama Nawaraj in Japan, covering Spring Boot delivery, frontend work, testing, documentation, and recruiter-ready case studies.");
         model.addAttribute("pageUrl", props.getSiteUrl() + "/");
         return "index";
     }
