@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (form) {
-        form.addEventListener("submit", validateAndSubmitForm);
+        form.addEventListener("submit", validateForm);
     }
 
     if (scrollToTopButton) {
@@ -49,42 +49,17 @@ document.addEventListener("DOMContentLoaded", () => {
         scrollToTopButton.style.display = shouldShow ? "block" : "none";
     }
 
-    async function validateAndSubmitForm(event) {
-        event.preventDefault();
+    function validateForm(event) {
+        const name = document.getElementById("name")?.value.trim() ?? "";
+        const email = document.getElementById("email")?.value.trim() ?? "";
+        const message = document.getElementById("message")?.value.trim() ?? "";
 
-        const formData = {
-            name: document.getElementById("name")?.value.trim() ?? "",
-            email: document.getElementById("email")?.value.trim() ?? "",
-            message: document.getElementById("message")?.value.trim() ?? ""
-        };
-
-        if (!validateName(formData.name) || !validateEmail(formData.email) || !validateMessage(formData.message)) {
+        if (!validateName(name) || !validateEmail(email) || !validateMessage(message)) {
+            event.preventDefault();
             return;
         }
 
         setFormStatus("Submitting...", false);
-
-        try {
-            const response = await fetch("/submitContactForm", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(formData)
-            });
-
-            const payload = await response.json();
-
-            if (!response.ok) {
-                setFormStatus(payload.message || "Unable to submit the form.", true);
-                return;
-            }
-
-            form.reset();
-            setFormStatus(payload.message || "Form submitted successfully.", false);
-        } catch (error) {
-            setFormStatus("Unable to submit the form right now. Please try again.", true);
-        }
     }
 
     function validateName(nameValue) {
