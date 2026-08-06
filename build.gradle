@@ -17,7 +17,7 @@ configurations {
 	}
 }
 
-configurations.all {
+	configurations.all {
 	resolutionStrategy.eachDependency { DependencyResolveDetails details ->
 		if (details.requested.group == 'io.netty') {
 			details.useVersion '4.2.15.Final'
@@ -25,11 +25,11 @@ configurations.all {
 		if (details.requested.group == 'io.opentelemetry') {
 			details.useVersion '1.62.0'
 		}
-		if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
-			details.useVersion '2.21.5'
-		}
 		if (details.requested.group == 'ch.qos.logback') {
 			details.useVersion '1.5.35'
+		}
+		if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-annotations') {
+			details.useVersion '2.22'
 		}
 	}
 }
